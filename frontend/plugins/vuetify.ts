@@ -1,3 +1,5 @@
+// plugins/vuetify.ts
+
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
@@ -14,6 +16,19 @@ export default defineNuxtPlugin((nuxtApp) => {
       aliases,
       sets: {
         mdi,
+      },
+    },
+    theme: {
+      defaultTheme: 'myCustomTheme',
+      themes: {
+        myCustomTheme: {
+          dark: false,
+          colors: {
+            background: '#F6F8FC',
+            surface: '#FFFFFF',
+            primary: '#1976D2',
+          },
+        },
       },
     },
   })

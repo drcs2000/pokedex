@@ -23,5 +23,4 @@ export default {
   background-size: 500px 500px;
   background-attachment: fixed;
 }
-
 </style>

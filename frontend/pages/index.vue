@@ -43,6 +43,7 @@ export default {
   background-color: white;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   color: #8b8b8b;
+  font-size: 15px;
 }
 
 .input-wrapper input::placeholder {

@@ -1,8 +1,6 @@
 <template>
-  <v-card
-    class="navbar"
-  >
-    <v-container class="navbar-container">
+  <v-container>
+    <v-card class="navbar">
       <v-row justify="space-around" align="center">
         <v-col
           v-for="(item, index) in navItems"
@@ -11,16 +9,17 @@
           cols="auto"
         >
           <v-btn
+            class="nav-btn"
             variant="text"
             :class="{'active-nav': index === activeIndex}"
           >
-            <v-icon left>{{ item.icon }}</v-icon>
-            <span :class="{'active-text': index === activeIndex}">{{ item.text }}</span>
+            <v-icon class="nav-icon" left>{{ item.icon }}</v-icon>
+            {{ item.text }}
           </v-btn>
         </v-col>
       </v-row>
-    </v-container>
-  </v-card>
+    </v-card>
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -32,7 +31,7 @@ export default defineComponent({
     return {
       navItems: [
         { text: 'Home', icon: 'mdi-home' },
-        { text: 'Pokedex', icon: 'mdi-pokedex' },
+        { text: 'Pokedex', icon: 'mdi-pokeball' },
         { text: 'Videogames', icon: 'mdi-gamepad' },
         { text: 'GCC Pokemon', icon: 'mdi-cards-outline' },
         { text: 'TV Pokemon', icon: 'mdi-television' },
@@ -45,28 +44,34 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style scoped>
 .navbar {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
-  max-width: 1200px;
+  width: 100%;
   display: flex;
   justify-content: center;
   margin: 20px auto;
+  height: 60px;
 }
 
-.navbar-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
+:deep .nav-btn {
+  color: #717987;
+  font-size: 10px;
+  height: 60px;
+  border-radius: 0%;
+  font-weight: 1000;
 }
 
-.v-btn {
-  color: #9e9e9e;
-}
-
-.v-btn.active-nav {
+:deep .v-btn.active-nav {
   color: red;
+  border-bottom: 2px solid red;
+  border-radius: 0%;
+}
+
+.nav-icon {
+  font-size: 24px;
+  margin-right: 6px;
 }
 
 span {

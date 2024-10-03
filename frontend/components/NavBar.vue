@@ -35,8 +35,8 @@ export default defineComponent({
         { text: 'Videogames', icon: 'mdi-gamepad' },
         { text: 'GCC Pokemon', icon: 'mdi-cards-outline' },
         { text: 'TV Pokemon', icon: 'mdi-television' },
-        { text: 'Play! Pokemon', icon: 'mdi-trophy' },
-        { text: 'News', icon: 'mdi-newspaper' }
+        { text: 'News', icon: 'mdi-newspaper' },
+        { text: 'Config', icon: 'mdi-cog' },
       ],
       activeIndex: 1
     };

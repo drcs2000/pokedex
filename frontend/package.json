@@ -10,8 +10,11 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@pinia/nuxt": "^0.5.5",
+    "axios": "^1.7.7",
     "nuxt": "^3.13.0",
-    "vue": "latest",
+    "pinia": "^2.2.4",
+    "vue": "^3.5.10",
     "vue-router": "latest"
   },
   "devDependencies": {

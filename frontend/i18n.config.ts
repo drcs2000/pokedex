@@ -20,8 +20,8 @@ export default {
       weaknesses: "Weaknesses",
       base_exp: "Base Exp",
       stats: "Stats",
-      total: "TOT"
-      
+      total: "TOT",
+      evolution: "Evolution"
     },
     pt: {
       navbar: {
@@ -40,7 +40,8 @@ export default {
       weaknesses: "Fraquezas",
       base_exp: "Exp Base",
       stats: "Estatísticas",
-      total: "Total"
+      total: "Total",
+      evolution: "Evolução"
     },
   },
 };

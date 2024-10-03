@@ -10,34 +10,35 @@ export const usePokemonStore = defineStore('pokemon', {
   actions: {
     async fetchPokemons() {
       try {
-        const response = await axios.get('https://pokeapi.co/api/v2/pokemon?limit=10');
-        const basicPokemons = response.data.results;
-
-        const detailedPokemons = await Promise.all(
-          basicPokemons.map(async (pokemon: { name: string; url: string }) => {
-            const detailsResponse = await axios.get(pokemon.url);
-            const details = detailsResponse.data;
-
-            const [weaknesses, evolutionChain] = await Promise.all([
-              this.fetchPokemonWeaknesses(details.types.map((typeInfo: any) => typeInfo.type.name)),
-              this.fetchPokemonEvolution(details.species.url) 
-            ]);
-
-            return {
-              id: this.formatId(details.id),
-              name: this.capitalizeFirstLetter(details.name),
-              types: details.types.map((typeInfo: any) => typeInfo.type.name),
-              weaknesses, 
-              evolutionChain, 
-              sprite: details.sprites.other.showdown.front_default,
-              details,
-            };
-          })
-        );
-
-        this.pokemons = detailedPokemons;
+        const response = await axios.get('https://pokeapi.co/api/v2/pokemon?limit=100');
+        this.pokemons = response.data.results;
       } catch (error) {
         console.error('Erro ao buscar os Pokémons:', error);
+        throw error;
+      }
+    },
+    
+    async fetchPokemonInfo(pokemonId: number) {
+      try {
+        const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`);
+        const details = response.data;
+    
+        const [weaknesses, evolutionChain] = await Promise.all([
+          this.fetchPokemonWeaknesses(details.types.map((typeInfo: any) => typeInfo.type.name)),
+          this.fetchPokemonEvolution(details.species.url)
+        ]);
+    
+        return {
+          id: this.formatId(details.id),
+          name: details.name,
+          types: details.types.map((typeInfo: any) => typeInfo.type.name),
+          sprite: details.sprites.other['official-artwork'].front_default,
+          details,
+          weaknesses,
+          evolutionChain
+        };
+      } catch (error) {
+        console.error('Erro ao buscar informações do Pokémon:', error);
         throw error;
       }
     },
@@ -89,10 +90,6 @@ export const usePokemonStore = defineStore('pokemon', {
 
     formatId(id: number): string {
       return id.toString().padStart(4, '0');
-    },
-
-    capitalizeFirstLetter(name: string): string {
-      return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
     },
   },
 });

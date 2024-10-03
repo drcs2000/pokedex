@@ -58,17 +58,39 @@
   color: white;
 }
 
+.scrollable-cards {
+  max-height: 105vh;
+  overflow-y: auto;
+}
+
+.scrollable-cards::-webkit-scrollbar {
+  width: 10px; /* Largura da barra de rolagem */
+}
+
+.scrollable-cards::-webkit-scrollbar-thumb {
+  background-color: #FF5350; /* Cor da parte que você arrasta */
+  border-radius: 10px; /* Arredondando a borda */
+}
+
+.scrollable-cards::-webkit-scrollbar-thumb:hover {
+  background-color: #b33331; /* Cor quando o mouse está sobre a barra */
+}
+
+.scrollable-cards::-webkit-scrollbar-track {
+  background-color: #f1f1f1; /* Cor da área de fundo da barra */
+  border-radius: 10px; /* Arredondando a borda do fundo */
+}
+
 .pokemon-card {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   background-color: white;
-  padding: 40px 20px 20px;
+  padding: 20px 20px 20px;
   border-radius: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
-  margin-bottom: 20px;
   transition: transform 0.3s ease;
 }
 

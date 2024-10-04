@@ -10,7 +10,6 @@
                 <img
                   src="../public/icons/pokeball.svg"
                   alt="Pokeball"
-                  class="pokeball-icon"
                   style="width: 20px; height: 20px"
                 />
               </button>
@@ -34,7 +33,7 @@
                 </v-icon>
               </v-btn>
 
-              <div class="range-filter">
+              <div>
                 <span class="range-label">{{ $t("from") }}</span>
                 <div class="input-filter-wrapper">
                   <input
@@ -120,7 +119,6 @@ export default defineComponent({
         select: [
           'type',
           'weakness',
-          'ability',
           'height',
           'weight'
         ]
@@ -137,12 +135,6 @@ export default defineComponent({
       .catch((error: any) => {
         console.error("Erro ao buscar os Pokémons:", error);
       });
-  },
-  mounted() {
-    document.addEventListener("click", this.handleOutsideClick);
-  },
-  beforeDestroy() {
-    document.removeEventListener("click", this.handleOutsideClick);
   },
   methods: {
     resetFilters() {

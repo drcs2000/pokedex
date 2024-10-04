@@ -1,0 +1,43 @@
+.input-wrapper {
+  position: relative;
+}
+
+// .input-wrapper:focus {
+//   outline: none;
+//   border-color: #c2c2c2;
+// }
+
+.input-wrapper input {
+  width: 100%;
+  padding: 15px 60px 15px 20px;
+  border-radius: 12px;
+  background-color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  color: #8b8b8b;
+  font-size: 15px;
+}
+
+.input-wrapper input::placeholder {
+  color: #8b8b8b;
+}
+
+.range-input {
+  width: 70px;
+  padding: 6px 8px;
+  border: 1px solid #dcdcdc;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.range-input:focus {
+  outline: none;
+  border-color: #c2c2c2;
+}
+
+.range-label {
+  color: black;
+  font-weight: bold;
+  margin-right: 5px;
+}

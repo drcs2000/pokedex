@@ -22,6 +22,8 @@ export const usePokemonStore = defineStore('pokemon', {
       try {
         const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`);
         const details = response.data;
+
+        const flavorText = await this.fetchPokemonFlavorText(pokemonId);
     
         const [weaknesses, evolutionChain] = await Promise.all([
           this.fetchPokemonWeaknesses(details.types.map((typeInfo: any) => typeInfo.type.name)),
@@ -35,11 +37,26 @@ export const usePokemonStore = defineStore('pokemon', {
           sprite: details.sprites.other['official-artwork'].front_default,
           details,
           weaknesses,
-          evolutionChain
+          evolutionChain,
+          flavorText, 
         };
       } catch (error) {
         console.error('Erro ao buscar informações do Pokémon:', error);
         throw error;
+      }
+    },
+
+    async fetchPokemonFlavorText(pokemonId: number): Promise<string> {
+      try {
+        const speciesResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/${pokemonId}`);
+        const speciesData = speciesResponse.data;
+        const flavorTextEntry = speciesData.flavor_text_entries.find((entry: any) => entry.language.name === 'en');
+        const cleanFlavorText = flavorTextEntry ? flavorTextEntry.flavor_text.replace(/\u000C|\u000B|\u000A|[\u25B2]/g, ' ') : 'No flavor text available';
+        
+        return cleanFlavorText;
+      } catch (error) {
+        console.error('Erro ao buscar o flavor text:', error);
+        return 'No flavor text available';
       }
     },
 

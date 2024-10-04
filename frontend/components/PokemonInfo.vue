@@ -25,12 +25,21 @@
         </span>
       </div>
 
+      <v-row class="pokemon-stats mt-2">
+        <v-col class="stat-block">
+          <div class="stat-title">
+            <span>Pokedex Entry</span>
+          </div>
+          <span class="stat-subtitle">{{ pokemon.flavorText }}</span>
+        </v-col>
+      </v-row>
+
       <v-row class="pokemon-stats">
         <v-col class="stat-block">
           <div class="stat-title">
             <span>{{ $t("abilities") }}</span>
           </div>
-          <div class="info-list">
+          <div class="info-list mt-1">
             <span
               v-for="item in pokemon.details.abilities"
               :key="item.ability.name"
@@ -43,14 +52,21 @@
       </v-row>
 
       <v-row class="pokemon-stats">
-        <v-col cols="6" class="stat-block">
+        <v-col cols="4" class="stat-block">
           <div class="stat-title">{{ $t("height") }}</div>
           <div class="stat-badge">{{ pokemon.details.height / 10 }}m</div>
         </v-col>
 
-        <v-col cols="6" class="stat-block">
+        <v-col cols="4" class="stat-block">
           <div class="stat-title">{{ $t("weight") }}</div>
           <div class="stat-badge">{{ pokemon.details.weight / 10 }}kg</div>
+        </v-col>
+
+        <v-col cols="4" class="stat-block">
+          <div class="stat-title">{{ $t("base_exp") }}</div>
+          <div class="stat-badge">
+            {{ pokemon.details.base_experience }}
+          </div>
         </v-col>
       </v-row>
 
@@ -63,14 +79,8 @@
               v-for="item in pokemon.weaknesses"
               style="height: 15px; width: 15px"
               :src="`/type-icons/${item.name}.svg`"
+              :title="item.name.toUpperCase()"
             />
-          </div>
-        </v-col>
-
-        <v-col cols="6" class="stat-block">
-          <div class="stat-title">{{ $t("base_exp") }}</div>
-          <div class="stat-badge">
-            {{ pokemon.details.base_experience }}
           </div>
         </v-col>
       </v-row>
@@ -209,255 +219,9 @@ export default defineComponent({
   border-radius: 15px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   text-align: center;
-  font-family: "Arial", sans-serif;
   position: relative;
   overflow: visible;
   top: 120px;
   max-width: 100%;
-}
-
-.pokemon-img-details-wrapper {
-  position: absolute;
-  top: -120px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.pokemon-img-details {
-  width: 180px;
-  height: 180px;
-}
-
-.pokemon-detail-id {
-  color: #9e9e9e;
-  font-size: 16px;
-  margin-top: 60px;
-  font-weight: bold;
-}
-
-.pokemon-detail-name {
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-  margin: 5px 0;
-}
-
-.pokemon-detail-types {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-}
-
-.pokemon-abilities {
-  display: flex;
-  justify-content: center;
-  margin-top: 10px;
-  margin-bottom: 6px;
-}
-
-.pokemon-abilities span {
-  font-size: 16px;
-  color: black;
-  font-weight: bold;
-}
-
-.info-list {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: nowrap;
-}
-
-.pokemon-abilities-badge {
-  color: black;
-  padding: 5px 20px;
-  font-size: 12px;
-  margin: 0 5px;
-  font-weight: bold;
-  border: 1px solid black;
-  border-radius: 20px;
-  background-color: #f5f7fc;
-  flex: 1;
-  text-align: center;
-  box-sizing: border-box;
-}
-
-.stat-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.stat-title {
-  font-size: 16px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 5px;
-}
-
-.stat-badge {
-  background-color: #f5f7fc;
-  border-radius: 20px;
-  padding: 5px 20px;
-  font-size: 14px;
-  font-weight: bold;
-  color: #333;
-  width: 100%;
-}
-
-.weaknesses-badge {
-  display: flex;
-  justify-content: flex-start;
-  flex-wrap: nowrap;
-  align-items: center;
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-  .pokemon-info-card {
-    top: 80px;
-    padding: 10px;
-  }
-
-  .pokemon-img-details {
-    width: 150px;
-    height: 150px;
-  }
-
-  .stat-title {
-    font-size: 12px;
-  }
-
-  .stat-badge {
-    font-size: 12px;
-    padding: 5px 15px;
-  }
-
-  .pokemon-detail-name {
-    font-size: 20px;
-  }
-
-  .pokemon-abilities-badge {
-    padding: 5px 15px;
-    font-size: 10px;
-  }
-
-  .stat-block {
-    margin-bottom: 10px;
-  }
-}
-
-@media (max-width: 480px) {
-  .pokemon-info-card {
-    width: 100%; /* Ajuste o tamanho para preencher a tela */
-  }
-
-  .pokemon-img-details {
-    width: 120px;
-    height: 120px;
-  }
-
-  .pokemon-detail-name {
-    font-size: 18px;
-  }
-
-  .pokemon-abilities-badge {
-    padding: 3px 10px;
-    font-size: 10px;
-  }
-
-  .stat-title {
-    font-size: 10px;
-  }
-
-  .stat-badge {
-    font-size: 10px;
-  }
-
-  .stat-block {
-    flex-basis: 100%;
-    text-align: center;
-  }
-
-  .pokemon-stats {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-  }
-}
-
-.pokemon-stats {
-  display: flex;
-  justify-content: space-around;
-  margin-top: 10px;
-}
-
-.stat-list {
-  display: flex;
-  justify-content: space-between;
-}
-
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 10px;
-  border-radius: 20px;
-  background-color: #f5f7fc;
-  width: 30px;
-  height: 50px;
-}
-
-.stat-label {
-  font-size: 10px;
-  color: white;
-  font-weight: bold;
-}
-
-.stat-value {
-  font-size: 12px;
-  font-weight: bold;
-  color: black;
-}
-
-.total-stat {
-  background-color: #b3d4fc;
-}
-
-.pokemon-evolution {
-  display: flex;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.evolution-list {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.evolution-item {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-}
-
-.evolution-img {
-  width: 50px;
-  height: 50px;
-}
-
-.evolution-arrow {
-  margin: 0 10px;
-}
-
-.badge {
-  display: inline-block;
-  padding: 5px 10px;
-  font-size: 12px;
-  color: #333;
-  background-color: #f5f7fc;
-  border-radius: 20px;
-  font-weight: bold;
-  text-align: center;
 }
 </style>

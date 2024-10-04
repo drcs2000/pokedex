@@ -8,13 +8,17 @@
       <span>{{ $t(info) }}</span>
       <i
         class="mdi"
-        :class="showDropdown.type ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+        :class="showDropdown[info] ? 'mdi-chevron-up' : 'mdi-chevron-down'"
       />
     </div>
 
     <transition name="slide-y-transition">
-      <div v-if="showDropdown.type" class="dropdown-content">
-        <label v-for="item in selectionArray" :key="type" class="dropdown-item">
+      <div v-if="showDropdown[info]" class="dropdown-content">
+        <label
+          v-for="item in selectionArray"
+          :key="item"
+          class="dropdown-item"
+        >
           <input
             type="checkbox"
             :value="item"
@@ -31,6 +35,8 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { availableTypes } from "@/public/utils/types.ts";
+import { getWeightRanges } from "@/public/utils/weight.ts";
+import { getHeightRanges } from "@/public/utils/height.ts";
 
 export default defineComponent({
   name: 'FilterSelect',
@@ -43,12 +49,12 @@ export default defineComponent({
   },
   data() {
     return {
-      availableTypes,
+      availableTypes, 
+      selectionArray: [] as string[],
       selectedTypes: [] as string[],
       showDropdown: {
         type: false,
         weakness: false,
-        ability: false,
         height: false,
         weight: false,
       },
@@ -62,12 +68,12 @@ export default defineComponent({
   },
   methods: {
     toggleDropdown(dropdown: string) {
-      console.log(dropdown)
-      if (dropdown === 'type') {
-        this.selectionArray = this.availableTypes
-      }
-      else if (dropdown === 'weakness') {
-        this.selectionArray = this.availableTypes
+      if (dropdown === 'type' || dropdown === 'weakness') {
+        this.selectionArray = this.availableTypes;
+      } else if (dropdown === 'weight') {
+        this.selectionArray = getWeightRanges();
+      } else if (dropdown === 'height') {
+        this.selectionArray = getHeightRanges();
       }
       this.showDropdown[dropdown] = !this.showDropdown[dropdown];
     },
@@ -75,6 +81,9 @@ export default defineComponent({
       const target = event.target as HTMLElement;
       if (!target.closest(".custom-select")) {
         this.showDropdown.type = false;
+        this.showDropdown.weakness = false;
+        this.showDropdown.weight = false;
+        this.showDropdown.height = false;
       }
     },
   }

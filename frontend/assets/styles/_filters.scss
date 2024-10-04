@@ -1,0 +1,15 @@
+.filters-row {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+.filters-row .reset-btn {
+  flex-shrink: 0;
+}
+
+.input-filter-wrapper {
+  position: relative;
+  display: inline-block;
+}

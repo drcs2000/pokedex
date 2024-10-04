@@ -13,6 +13,9 @@ export default {
         favorites: 'Favorites',
         config: 'Config'
       },
+      type: 'Type',
+      weakness: 'Weakness',
+      ability: 'Ability',
       search: 'Search your Pokemon!',
       abilities: "Abilities",
       height: "Height",
@@ -37,6 +40,9 @@ export default {
         favorites: 'Favoritos',
         config: 'Config'
       },
+      type: 'Tipo',
+      weakness: 'Fraqueza',
+      ability: 'Habilidade',
       search: 'Procure seu Pokémon!',
       abilities: "Habilidades",
       height: "Altura",

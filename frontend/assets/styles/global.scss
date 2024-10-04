@@ -187,3 +187,142 @@
   font-weight: bold;
 }
 
+.custom-select {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 10px;
+  max-width: 100%;
+}
+
+.select-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 8px;
+  background: white;
+  border: 1px solid #e2e2e2;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.select-btn.has-selection {
+  border: 1px solid rgba(255, 0, 0, 0.697);
+  box-shadow: 4px 4px 10px rgba(255, 0, 0, 0.697);
+}
+
+.dropdown-content {
+  position: absolute;
+  top: calc(100%);
+  left: 0;
+  background-color: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  border-radius: 12px;
+  z-index: 10;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  max-height: 30vh;
+}
+
+.dropdown-content::-webkit-scrollbar {
+  width: 5px;
+}
+
+.dropdown-content::-webkit-scrollbar-thumb {
+  background-color: #FF5350;
+  border-radius: 10px;
+}
+
+.dropdown-content::-webkit-scrollbar-thumb:hover {
+  background-color: #b33331;
+}
+
+.dropdown-content::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+  border-radius: 10px;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  padding: 5px 0;
+}
+
+.checkbox-label {
+  margin-left: 10px;
+  font-weight: bold;
+  color: #333;
+  font-size: 14px;
+}
+
+.styled-checkbox {
+  position: relative;
+  appearance: none;
+  width: 15px;
+  height: 15px;
+  border: 2px solid #c4c4c4;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.styled-checkbox:checked {
+  background-color: #ff5350;
+  border-color: #ff5350;
+}
+
+.styled-checkbox:checked::after {
+  content: "✔";
+  font-size: 10px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  box-shadow: 4px 4px 10px rgba(255, 0, 0, 0.697);
+}
+
+.range-input {
+  width: 60px;
+  border: 1px solid #e2e2e2;
+  padding: 8px;
+  border-radius: 12px;
+  text-align: center;
+  color: #333;
+}
+
+.reset-btn {
+  background-color: #778B99;
+  border-radius: 12px;
+  padding: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: 16px;
+  width: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reset-btn:hover {
+  background-color: #6d828f;
+}
+
+.range-input:focus {
+  outline: none;
+  border-color: #c2c2c2;
+}
+
+.filters-row .reset-btn {
+  flex-shrink: 0;
+}

@@ -24,9 +24,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         myCustomTheme: {
           dark: false,
           colors: {
-            background: '#F6F8FC',
-            surface: '#FFFFFF',
-            primary: '#1976D2',
+            background: '#F6F8FC'
           },
         },
       },

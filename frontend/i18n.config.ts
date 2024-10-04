@@ -21,7 +21,11 @@ export default {
       base_exp: "Base Exp",
       stats: "Stats",
       total: "TOT",
-      evolution: "Evolution"
+      evolution: "Evolution",
+      ascending: "Ascending",
+      descending: "Descending",
+      from: "From",
+      to: "To"
     },
     pt: {
       navbar: {
@@ -41,7 +45,11 @@ export default {
       base_exp: "Exp Base",
       stats: "Estatísticas",
       total: "Total",
-      evolution: "Evolução"
+      evolution: "Evolução",
+      ascending: "Crescente",
+      descending: "Decrescente",
+      from: "De",
+      to: "Até"
     },
   },
 };

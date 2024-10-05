@@ -4,7 +4,7 @@ import axios from 'axios';
 export const usePokemonStore = defineStore('pokemon', {
   state: () => ({
     pokemons: [] as any[],
-    pokemonTypes: {} as any,
+    nextUrl: null as string | null,
   }),
 
   actions: {
@@ -12,8 +12,22 @@ export const usePokemonStore = defineStore('pokemon', {
       try {
         const response = await axios.get('https://pokeapi.co/api/v2/pokemon?limit=100');
         this.pokemons = response.data.results;
+        this.nextUrl = response.data.next;
       } catch (error) {
         console.error('Erro ao buscar os Pokémons:', error);
+        throw error;
+      }
+    },
+
+    async loadMorePokemons(nextUrl: string) {
+      console.log(nextUrl)
+      try {
+        const response = await axios.get(nextUrl);
+        this.pokemons = [...this.pokemons, ...response.data.results];
+        this.nextUrl = response.data.next;
+        return { nextUrl: response.data.next };
+      } catch (error) {
+        console.error('Erro ao carregar mais Pokémons:', error);
         throw error;
       }
     },
@@ -34,7 +48,6 @@ export const usePokemonStore = defineStore('pokemon', {
           id: this.formatId(details.id),
           name: details.name,
           types: details.types.map((typeInfo: any) => typeInfo.type.name),
-          sprite: details.sprites.other['official-artwork'].front_default,
           details,
           weaknesses,
           evolutionChain,
@@ -94,10 +107,14 @@ export const usePokemonStore = defineStore('pokemon', {
       const evolutions = [];
       let currentChain = chain;
 
+      console.log(currentChain)
+
       while (currentChain) {
+        const evolutionDetails = currentChain.evolution_details[0];
         evolutions.push({
           name: currentChain.species.name,
-          url: currentChain.species.url
+          url: currentChain.species.url,
+          min_level: evolutionDetails ? evolutionDetails.min_level : 0 
         });
         currentChain = currentChain.evolves_to[0]; 
       }

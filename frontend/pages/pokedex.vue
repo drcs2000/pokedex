@@ -62,7 +62,7 @@
           </button>
         </v-row>
 
-        <v-row class="scrollable-cards mb-6" ref="scrollableCards">
+        <v-row class="scrollable-cards mb-6">
           <v-col
             cols="12"
             md="4"
@@ -89,11 +89,10 @@
               </div>
             </div>
           </v-col>
+          <v-col cols="12">
+            <v-btn block @click="loadMorePokemons()"> oie </v-btn>
+          </v-col>
         </v-row>
-
-        <v-col cols="12" v-if="loading">
-          <v-btn block disabled>Loading...</v-btn>
-        </v-col>
       </v-col>
 
       <v-col cols="4">
@@ -104,8 +103,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-import { useInfiniteScroll } from "@vueuse/core";
+import { defineComponent, nextTick } from "vue";
 
 export default defineComponent({
   name: "Pokedex",
@@ -121,13 +119,10 @@ export default defineComponent({
       filters: {
         from: null,
         to: null,
-        select: [
-          'type',
-          'weakness',
-          'height',
-          'weight'
-        ]
+        select: ["type", "weakness", "height", "weight"],
       },
+      nextUrl: null,
+      loading: false,
     };
   },
   created() {
@@ -141,14 +136,6 @@ export default defineComponent({
       .catch((error: any) => {
         console.error("Erro ao buscar os Pokémons:", error);
       });
-  },
-  mounted() {
-    const scrollable = this.$refs.scrollableCards;
-    useInfiniteScroll(scrollable, () => {
-      if (!this.loading) {
-        this.loadMorePokemons();
-      }
-    });
   },
   methods: {
     resetFilters() {
@@ -165,18 +152,6 @@ export default defineComponent({
           this.selectedPokemon = data;
         });
     },
-    async loadMorePokemons() {
-      if (!this.nextUrl || this.loading) return;
-
-      this.loading = true;
-
-      await this.$store.loadMorePokemons(this.nextUrl).then((response) => {
-        this.pokemonList = this.$store.pokemons;
-        this.nextUrl = response.nextUrl;
-      });
-
-      this.loading = false;
-    },
     getPokemonGif(name: string) {
       const pokemonId = this.getPokemonIdFromName(name);
       return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/${pokemonId}.gif`;
@@ -190,6 +165,18 @@ export default defineComponent({
     },
     formatId(id: number): string {
       return id.toString().padStart(4, "0");
+    },
+    async loadMorePokemons() {
+      if (!this.nextUrl || this.loading) return;
+
+      this.loading = true;
+
+      await this.$store.loadMorePokemons(this.nextUrl).then((response) => {
+        this.pokemonList = this.$store.pokemons;
+        this.nextUrl = response.nextUrl;
+      });
+
+      this.loading = false;
     },
   },
 });

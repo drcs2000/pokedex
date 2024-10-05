@@ -3,7 +3,7 @@
     <v-card class="pokemon-info-card">
       <div class="pokemon-img-details-wrapper">
         <img
-          :src="pokemon.details.sprites.other.dream_world.front_default"
+          :src="getSprite(pokemon.name)"
           alt="pokemon"
           class="pokemon-img-details"
         />
@@ -117,15 +117,19 @@
             class="evolution-item"
           >
             <img
-              :src="getEvolutionSprite(evolution.name)"
+              :src="getSprite(evolution.name)"
               :alt="evolution.name"
               class="evolution-img"
+              :title="evolution.name"
             />
+
             <div
               v-if="index < pokemon.evolutionChain.length - 1"
               class="evolution-arrow"
             >
-              <span class="badge">Lvl {{ evolution.level || "??" }}</span>
+              <span class="badge">
+                Lvl {{ pokemon.evolutionChain[index + 1].min_level || "Any" }}
+              </span>
             </div>
           </div>
         </v-col>
@@ -195,7 +199,7 @@ export default defineComponent({
         0
       );
     },
-    getEvolutionSprite(name: string) {
+    getSprite(name: string) {
       const pokemonId = this.getPokemonIdFromName(name);
       return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${pokemonId}.svg`;
     },

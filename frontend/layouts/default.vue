@@ -1,9 +1,11 @@
 <template>
   <v-app id="app">
-    <NavBar />
-    <v-main>
-      <NuxtPage />
-    </v-main>
+    <v-container>
+        <NavBar />
+        <v-main>
+          <NuxtPage />
+        </v-main>
+    </v-container>
   </v-app>
 </template>
 
@@ -22,5 +24,9 @@ export default {
   background-position: -15% -60%;
   background-size: 500px 500px;
   background-attachment: fixed;
+}
+
+.v-container {
+  max-width: 1200px;
 }
 </style>

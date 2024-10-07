@@ -4,7 +4,7 @@
       <v-col cols="8">
         <v-row>
           <v-col cols="12">
-            <div class="input-wrapper">
+            <div class="input-wrapper mb-2">
               <input type="text" :placeholder="$t('search')" />
               <button class="search-button">
                 <img
@@ -15,16 +15,27 @@
               </button>
             </div>
           </v-col>
-          <v-col cols="5">
-            <v-row class="info-list">
-            </v-row>
-          </v-col>
         </v-row>
 
         <v-row class="mb-2">
           <v-col cols="12">
-            <v-row justify="center" align="center" class="filters-row">
+            <v-row>
+              <FilterSelect
+              v-for="item in filters.select"
+              :key="item"
+              :info="item"
+              :resetTrigger="resetTrigger"
+              @filter-updated="handleFilterUpdate"
+            />
+
+            <button class="reset-btn" @click="resetFilters">
+              <i class="mdi mdi-refresh" />
+            </button>
+            </v-row>
+            
+            <v-row class="mt-6">
               <v-btn
+                :class="{ 'active-sort': isAscending }"
                 variant="text"
                 class="ascending-btn"
                 @click="toggleSortOrder"
@@ -37,37 +48,6 @@
                 </v-icon>
               </v-btn>
 
-              <FilterSelect
-                v-for="item in filters.select"
-                :key="item"
-                :info="item"
-                :resetTrigger="resetTrigger"
-                @filter-updated="handleFilterUpdate"
-              />
-
-              <button class="reset-btn" @click="resetFilters">
-                <i class="mdi mdi-refresh" />
-              </button>
-
-              <div>
-                <span class="range-label">{{ $t("from") }}</span>
-                <div class="input-filter-wrapper">
-                  <input
-                    type="number"
-                    v-model="filters.from"
-                    class="range-input"
-                  />
-                </div>
-
-                <span class="range-label ml-2">{{ $t("to") }}</span>
-                <div class="input-filter-wrapper">
-                  <input
-                    type="number"
-                    v-model="filters.to"
-                    class="range-input"
-                  />
-                </div>
-              </div>
             </v-row>
           </v-col>
         </v-row>
@@ -129,8 +109,6 @@ export default defineComponent({
       selectedPokemon: null,
       isAscending: true,
       filters: {
-        from: null,
-        to: null,
         select: ["type"],
         values: {} as Record<string, any[]>,
       },
@@ -146,7 +124,10 @@ export default defineComponent({
   mounted() {
     const scrollable = this.$refs.scrollableCards;
     useInfiniteScroll(scrollable, () => {
-      if (!this.loading) {
+      if (
+        !this.loading &&
+        !this.isFiltered
+      ) {
         this.loadMorePokemons();
       }
     });
@@ -165,8 +146,6 @@ export default defineComponent({
         });
     },
     resetFilters() {
-      this.filters.from = null;
-      this.filters.to = null;
       this.filters.values = {};
       this.$store.filteredPokemons = [];
       this.isFiltered = false;
@@ -195,7 +174,7 @@ export default defineComponent({
     },
     getPokemonImage(name: string) {
       const pokemonId = this.getPokemonIdFromName(name);
-      return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId}.png`;
+      return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/${pokemonId}.gif`;
     },
     getPokemonIdFromName(name: string) {
       const pokemon = this.pokemonList.find((evo) => evo.name === name);
@@ -228,13 +207,25 @@ export default defineComponent({
           this.pokemonList = [];
         } else {
           await this.$store.fetchPokemonType(this.filters.values);
-          this.pokemonList = this.$store.filteredPokemons
+          this.pokemonList = this.$store.filteredPokemons;
+          this.sortPokemonList();
         }
       } catch (error) {
         console.error("Erro ao aplicar filtros:", error);
       } finally {
         this.loading = false;
       }
+    },
+    toggleSortOrder() {
+      this.isAscending = !this.isAscending;
+      this.sortPokemonList();
+    },
+    sortPokemonList() {
+      this.pokemonList = this.pokemonList.sort((a, b) => {
+        const idA = parseInt(this.getPokemonIdFromName(a.name), 10);
+        const idB = parseInt(this.getPokemonIdFromName(b.name), 10);
+        return this.isAscending ? idA - idB : idB - idA;
+      });
     },
   },
 });

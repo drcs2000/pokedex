@@ -9,7 +9,7 @@
       {{ capitalizeFirstLetter(pokemon.name) }}
     </div>
 
-    <div class="pokemon-detail-types">
+    <div class="pokemon-detail-types mb-4">
       <span
         v-for="type in pokemon.types"
         :key="type"
@@ -19,23 +19,6 @@
         {{ type.toUpperCase() }}
       </span>
     </div>
-
-    <v-row class="stat-list mt-2">
-      <v-col class="stat-block">
-        <div class="stat-title">
-          <span>{{ $t("abilities") }}</span>
-        </div>
-        <div class="info-list mt-1">
-          <span
-            v-for="item in pokemon.details.abilities"
-            :key="item.ability.name"
-            class="pokemon-abilities-badge"
-          >
-            {{ item.ability.name.toUpperCase() }}
-          </span>
-        </div>
-      </v-col>
-    </v-row>
 
     <v-row class="stat-list">
       <v-col cols="4" class="stat-block">
@@ -53,7 +36,7 @@
       </v-col>
     </v-row>
 
-    <v-row class="stat-list">
+    <v-row class="stat-list mb-2">
       <v-col class="stat-block">
         <div class="stat-title">{{ $t("weaknesses") }}</div>
         <div class="stat-badge weaknesses-badge">
@@ -68,7 +51,7 @@
       </v-col>
     </v-row>
 
-    <v-row class="stat-list">
+    <v-row class="stat-list mb-2">
       <div class="stat-title">
         <span>{{ $t("stats") }}</span>
       </div>

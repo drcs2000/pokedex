@@ -1,141 +1,123 @@
 <template>
-  <div class="sticky-container">
-    <v-card class="pokemon-info-card">
-      <div class="pokemon-img-details-wrapper">
-        <img
-          :src="getSprite(pokemon.name)"
-          alt="pokemon"
-          class="pokemon-img-details"
-        />
-      </div>
+  <v-card class="pokemon-info-card">
+    <div class="pokemon-img-details-wrapper">
+      <img :src="cardImage()" alt="pokemon" class="pokemon-img-details" />
+    </div>
 
-      <div class="pokemon-detail-id">#{{ pokemon.id }}</div>
-      <div class="pokemon-detail-name">
-        {{ capitalizeFirstLetter(pokemon.name) }}
-      </div>
+    <div class="pokemon-detail-id">#{{ pokemon.id }}</div>
+    <div class="pokemon-detail-name">
+      {{ capitalizeFirstLetter(pokemon.name) }}
+    </div>
 
-      <div class="pokemon-detail-types">
-        <span
-          v-for="type in pokemon.types"
-          :key="type"
-          class="pokemon-type-badge"
-          :style="{ backgroundColor: getTypeColor(type) }"
+    <div class="pokemon-detail-types">
+      <span
+        v-for="type in pokemon.types"
+        :key="type"
+        class="pokemon-type-badge"
+        :style="{ backgroundColor: getTypeColor(type) }"
+      >
+        {{ type.toUpperCase() }}
+      </span>
+    </div>
+
+    <v-row class="stat-list mt-2">
+      <v-col class="stat-block">
+        <div class="stat-title">
+          <span>{{ $t("abilities") }}</span>
+        </div>
+        <div class="info-list mt-1">
+          <span
+            v-for="item in pokemon.details.abilities"
+            :key="item.ability.name"
+            class="pokemon-abilities-badge"
+          >
+            {{ item.ability.name.toUpperCase() }}
+          </span>
+        </div>
+      </v-col>
+    </v-row>
+
+    <v-row class="stat-list">
+      <v-col cols="4" class="stat-block">
+        <div class="stat-title">{{ $t("height") }}</div>
+        <div class="stat-badge weaknesses-badge">
+          {{ pokemon.details.height / 10 }}m
+        </div>
+      </v-col>
+
+      <v-col cols="4" class="stat-block">
+        <div class="stat-title">{{ $t("weight") }}</div>
+        <div class="stat-badge weaknesses-badge">
+          {{ pokemon.details.weight / 10 }}kg
+        </div>
+      </v-col>
+    </v-row>
+
+    <v-row class="stat-list">
+      <v-col class="stat-block">
+        <div class="stat-title">{{ $t("weaknesses") }}</div>
+        <div class="stat-badge weaknesses-badge">
+          <span class="mr-1"><strong>2x</strong></span>
+          <v-img
+            v-for="item in pokemon.weaknesses"
+            style="height: 15px; width: 15px"
+            :src="`/type-icons/${item.name}.svg`"
+            :title="item.name.toUpperCase()"
+          />
+        </div>
+      </v-col>
+    </v-row>
+
+    <v-row class="stat-list">
+      <div class="stat-title">
+        <span>{{ $t("stats") }}</span>
+      </div>
+      <v-col cols="12" class="stat-list">
+        <div
+          v-for="(stat, index) in pokemon.details.stats"
+          :key="index"
+          class="stat-item"
+          :style="{ backgroundColor: getStatColor(index) }"
         >
-          {{ type.toUpperCase() }}
-        </span>
-      </div>
-
-      <v-row class="pokemon-stats mt-2">
-        <v-col class="stat-block">
-          <div class="stat-title">
-            <span>Pokedex Entry</span>
+          <div class="stat-label">
+            {{ getStatLabel(index) }}
           </div>
-          <span class="stat-subtitle">{{ pokemon.flavorText }}</span>
-        </v-col>
-      </v-row>
+          <div class="stat-value">{{ stat.base_stat }}</div>
+        </div>
+        <div class="stat-item total-stat">
+          <div class="stat-label">{{ $t("total") }}</div>
+          <div class="stat-value">{{ getTotalStats() }}</div>
+        </div>
+      </v-col>
+    </v-row>
 
-      <v-row class="pokemon-stats">
-        <v-col class="stat-block">
-          <div class="stat-title">
-            <span>{{ $t("abilities") }}</span>
-          </div>
-          <div class="info-list mt-1">
-            <span
-              v-for="item in pokemon.details.abilities"
-              :key="item.ability.name"
-              class="pokemon-abilities-badge"
-            >
-              {{ item.ability.name.toUpperCase() }}
+    <v-row class="pokemon-evolution">
+      <div class="stat-title">{{ $t("evolution") }}</div>
+      <v-col cols="12" class="evolution-list">
+        <div
+          v-for="(evolution, index) in pokemon.evolutionChain"
+          :key="index"
+          class="evolution-item"
+        >
+          <img
+            :src="getSprite(evolution.name)"
+            :alt="evolution.name"
+            class="evolution-img"
+            :title="evolution.name"
+          />
+
+          <div
+            v-if="index < pokemon.evolutionChain.length - 1"
+            class="evolution-arrow"
+          >
+            <span class="badge">
+              Lvl {{ pokemon.evolutionChain[index + 1].min_level || "Any" }}
             </span>
           </div>
-        </v-col>
-      </v-row>
-
-      <v-row class="pokemon-stats">
-        <v-col cols="4" class="stat-block">
-          <div class="stat-title">{{ $t("height") }}</div>
-          <div class="stat-badge">{{ pokemon.details.height / 10 }}m</div>
-        </v-col>
-
-        <v-col cols="4" class="stat-block">
-          <div class="stat-title">{{ $t("weight") }}</div>
-          <div class="stat-badge">{{ pokemon.details.weight / 10 }}kg</div>
-        </v-col>
-
-        <v-col cols="4" class="stat-block">
-          <div class="stat-title">{{ $t("base_exp") }}</div>
-          <div class="stat-badge">
-            {{ pokemon.details.base_experience }}
-          </div>
-        </v-col>
-      </v-row>
-
-      <v-row class="pokemon-stats">
-        <v-col cols="6" class="stat-block">
-          <div class="stat-title">{{ $t("weaknesses") }}</div>
-          <div class="stat-badge weaknesses-badge">
-            <span class="mr-1"><strong>2x</strong></span>
-            <v-img
-              v-for="item in pokemon.weaknesses"
-              style="height: 15px; width: 15px"
-              :src="`/type-icons/${item.name}.svg`"
-              :title="item.name.toUpperCase()"
-            />
-          </div>
-        </v-col>
-      </v-row>
-
-      <v-row class="pokemon-stats">
-        <div class="stat-title">
-          <span>{{ $t("stats") }}</span>
         </div>
-        <v-col cols="12" class="stat-list">
-          <div
-            v-for="(stat, index) in pokemon.details.stats"
-            :key="index"
-            class="stat-item"
-            :style="{ backgroundColor: getStatColor(index) }"
-          >
-            <div class="stat-label">
-              {{ getStatLabel(index) }}
-            </div>
-            <div class="stat-value">{{ stat.base_stat }}</div>
-          </div>
-          <div class="stat-item total-stat">
-            <div class="stat-label">{{ $t("total") }}</div>
-            <div class="stat-value">{{ getTotalStats() }}</div>
-          </div>
-        </v-col>
-      </v-row>
-
-      <v-row class="pokemon-evolution">
-        <div class="stat-title">{{ $t("evolution") }}</div>
-        <v-col cols="12" class="evolution-list">
-          <div
-            v-for="(evolution, index) in pokemon.evolutionChain"
-            :key="index"
-            class="evolution-item"
-          >
-            <img
-              :src="getSprite(evolution.name)"
-              :alt="evolution.name"
-              class="evolution-img"
-              :title="evolution.name"
-            />
-
-            <div
-              v-if="index < pokemon.evolutionChain.length - 1"
-              class="evolution-arrow"
-            >
-              <span class="badge">
-                Lvl {{ pokemon.evolutionChain[index + 1].min_level || "Any" }}
-              </span>
-            </div>
-          </div>
-        </v-col>
-      </v-row>
-    </v-card>
-  </div>
+      </v-col>
+    </v-row>
+  </v-card>
 </template>
 
 <script lang="ts">
@@ -201,7 +183,7 @@ export default defineComponent({
     },
     getSprite(name: string) {
       const pokemonId = this.getPokemonIdFromName(name);
-      return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${pokemonId}.svg`;
+      return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId}.png`;
     },
     getPokemonIdFromName(name: string) {
       const pokemon = this.pokemon.evolutionChain.find(
@@ -211,6 +193,13 @@ export default defineComponent({
     },
     capitalizeFirstLetter(name: string) {
       return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+    },
+    cardImage() {
+      return (
+        this.pokemon.details.sprites.other?.["official-artwork"]
+          ?.front_default ??
+        this.pokemon.details.sprites.other.home.front_default
+      );
     },
   },
 });

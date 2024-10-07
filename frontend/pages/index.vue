@@ -8,18 +8,22 @@
               <input type="text" :placeholder="$t('search')" />
               <button class="search-button">
                 <img
-                  src="../public/icons/pokeball.svg"
+                  src="/icons/pokeball.svg"
                   alt="Pokeball"
                   style="width: 20px; height: 20px"
                 />
               </button>
             </div>
           </v-col>
+          <v-col cols="5">
+            <v-row class="info-list">
+            </v-row>
+          </v-col>
         </v-row>
 
-        <v-row class="filters mb-2">
+        <v-row class="mb-2">
           <v-col cols="12">
-            <v-row justify="space-between" align="center" class="filters-row">
+            <v-row justify="center" align="center" class="filters-row">
               <v-btn
                 variant="text"
                 class="ascending-btn"
@@ -32,6 +36,18 @@
                   {{ isAscending ? "mdi-chevron-up" : "mdi-chevron-down" }}
                 </v-icon>
               </v-btn>
+
+              <FilterSelect
+                v-for="item in filters.select"
+                :key="item"
+                :info="item"
+                :resetTrigger="resetTrigger"
+                @filter-updated="handleFilterUpdate"
+              />
+
+              <button class="reset-btn" @click="resetFilters">
+                <i class="mdi mdi-refresh" />
+              </button>
 
               <div>
                 <span class="range-label">{{ $t("from") }}</span>
@@ -54,12 +70,6 @@
               </div>
             </v-row>
           </v-col>
-
-          <FilterSelect v-for="item in filters.select" :info="item" />
-
-          <button class="reset-btn">
-            <i class="mdi mdi-refresh" />
-          </button>
         </v-row>
 
         <v-row class="scrollable-cards mb-6" ref="scrollableCards">
@@ -74,7 +84,7 @@
             <div class="pokemon-card">
               <div class="pokemon-img-wrapper">
                 <img
-                  :src="getPokemonGif(pokemon.name)"
+                  :src="getPokemonImage(pokemon.name)"
                   :alt="pokemon.name"
                   class="pokemon-img"
                 />
@@ -104,7 +114,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent } from "vue";
 import { useInfiniteScroll } from "@vueuse/core";
 
 export default defineComponent({
@@ -121,26 +131,17 @@ export default defineComponent({
       filters: {
         from: null,
         to: null,
-        select: [
-          'type',
-          'weakness',
-          'height',
-          'weight'
-        ]
+        select: ["type"],
+        values: {} as Record<string, any[]>,
       },
+      loading: false,
+      selected: false,
+      isFiltered: false,
+      resetTrigger: false,
     };
   },
   created() {
-    this.$store
-      .fetchPokemons()
-      .then(() => {
-        this.pokemonList = this.$store.pokemons;
-        this.nextUrl = this.$store.nextUrl;
-        this.selectPokemon(this.pokemonList[0]);
-      })
-      .catch((error: any) => {
-        console.error("Erro ao buscar os Pokémons:", error);
-      });
+    this.fetch();
   },
   mounted() {
     const scrollable = this.$refs.scrollableCards;
@@ -151,9 +152,26 @@ export default defineComponent({
     });
   },
   methods: {
+    fetch() {
+      this.$store
+        .fetchPokemons()
+        .then(() => {
+          this.pokemonList = this.$store.pokemons;
+          this.nextUrl = this.$store.nextUrl;
+          this.selectPokemon(this.pokemonList[0]);
+        })
+        .catch((error: any) => {
+          console.error("Erro ao buscar os Pokémons:", error);
+        });
+    },
     resetFilters() {
       this.filters.from = null;
       this.filters.to = null;
+      this.filters.values = {};
+      this.$store.filteredPokemons = [];
+      this.isFiltered = false;
+      this.resetTrigger = !this.resetTrigger;
+      this.fetch();
     },
     toggleSortOrder() {
       this.isAscending = !this.isAscending;
@@ -166,30 +184,57 @@ export default defineComponent({
         });
     },
     async loadMorePokemons() {
-      if (!this.nextUrl || this.loading) return;
+      if (!this.nextUrl || this.loading || this.isFiltered) return;
 
       this.loading = true;
-
       await this.$store.loadMorePokemons(this.nextUrl).then((response) => {
         this.pokemonList = this.$store.pokemons;
         this.nextUrl = response.nextUrl;
       });
-
       this.loading = false;
     },
-    getPokemonGif(name: string) {
+    getPokemonImage(name: string) {
       const pokemonId = this.getPokemonIdFromName(name);
-      return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/${pokemonId}.gif`;
+      return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId}.png`;
     },
     getPokemonIdFromName(name: string) {
       const pokemon = this.pokemonList.find((evo) => evo.name === name);
       return pokemon ? pokemon.url.split("/")[6] : "";
     },
     capitalizeFirstLetter(name: string) {
-      return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+      return name
+        .toLowerCase()
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" ");
     },
     formatId(id: number): string {
       return id.toString().padStart(4, "0");
+    },
+    handleFilterUpdate(filterUpdate: { type: string; values: any[] }) {
+      this.filters.values[filterUpdate.type] = filterUpdate.values;
+      if (this.filters.values[filterUpdate.type].length === 0) {
+        this.isFiltered = false;
+        this.fetch();
+      } else {
+        this.isFiltered = true;
+        this.applyFilters();
+      }
+    },
+    async applyFilters() {
+      this.loading = true;
+      try {
+        if (Object.keys(this.filters.values).length === 0) {
+          this.pokemonList = [];
+        } else {
+          await this.$store.fetchPokemonType(this.filters.values);
+          this.pokemonList = this.$store.filteredPokemons
+        }
+      } catch (error) {
+        console.error("Erro ao aplicar filtros:", error);
+      } finally {
+        this.loading = false;
+      }
     },
   },
 });

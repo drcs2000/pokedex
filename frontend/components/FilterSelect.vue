@@ -24,6 +24,7 @@
             :value="item"
             v-model="selectedTypes"
             class="styled-checkbox"
+            @change="updateFilter"
           />
           <span class="checkbox-label">{{ item }}</span>
         </label>
@@ -35,17 +36,19 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 import { availableTypes } from "@/public/utils/types.ts";
-import { getWeightRanges } from "@/public/utils/weight.ts";
-import { getHeightRanges } from "@/public/utils/height.ts";
 
 export default defineComponent({
-  name: 'FilterSelect',
+  name: "FilterSelect",
   props: {
     info: {
       type: String,
       required: true,
-      default: () => ('')
-    }
+      default: () => "",
+    },
+    resetTrigger: {
+      type: Boolean,
+      required: true,
+    },
   },
   data() {
     return {
@@ -54,26 +57,24 @@ export default defineComponent({
       selectedTypes: [] as string[],
       showDropdown: {
         type: false,
-        weakness: false,
-        height: false,
-        weight: false,
       },
-    }
+    };
+  },
+  watch: {
+    resetTrigger() {
+      this.selectedTypes = [];
+    },
   },
   mounted() {
     document.addEventListener("click", this.handleOutsideClick);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     document.removeEventListener("click", this.handleOutsideClick);
   },
   methods: {
     toggleDropdown(dropdown: string) {
-      if (dropdown === 'type' || dropdown === 'weakness') {
+      if (dropdown === "type") {
         this.selectionArray = this.availableTypes;
-      } else if (dropdown === 'weight') {
-        this.selectionArray = getWeightRanges();
-      } else if (dropdown === 'height') {
-        this.selectionArray = getHeightRanges();
       }
       this.showDropdown[dropdown] = !this.showDropdown[dropdown];
     },
@@ -81,11 +82,14 @@ export default defineComponent({
       const target = event.target as HTMLElement;
       if (!target.closest(".custom-select")) {
         this.showDropdown.type = false;
-        this.showDropdown.weakness = false;
-        this.showDropdown.weight = false;
-        this.showDropdown.height = false;
       }
     },
-  }
-})
+    updateFilter() {
+      this.$emit("filter-updated", {
+        type: this.info,
+        values: this.selectedTypes,
+      });
+    },
+  },
+});
 </script>

@@ -25,10 +25,11 @@ export default {
       stats: "Stats",
       total: "TOT",
       evolution: "Evolution",
+      pokedex_entry: "Pokedex Entry",
       ascending: "Ascending",
       descending: "Descending",
       from: "From",
-      to: "To"
+      to: "To",
     },
     pt: {
       navbar: {
@@ -52,6 +53,7 @@ export default {
       stats: "Estatísticas",
       total: "Total",
       evolution: "Evolução",
+      pokedex_entry: "Pokedex Entry",
       ascending: "Crescente",
       descending: "Decrescente",
       from: "De",

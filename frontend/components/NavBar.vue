@@ -17,7 +17,7 @@
                 @click="navigateTo(index)"
               >
                 <v-icon class="nav-icon" left>{{ item.icon }}</v-icon>
-                {{ $t(item.text) }}
+                <span class="nav-text">{{ $t(item.text) }}</span>
               </v-btn>
             </v-col>
           </v-row>
@@ -47,9 +47,6 @@ export default defineComponent({
     const navItems = [
       { text: "navbar.home", icon: "mdi-home", route: "/" },
       { text: "navbar.pokedex", icon: "mdi-pokeball", route: "/pokedex" },
-      { text: "navbar.videogames", icon: "mdi-gamepad", route: "/videogames" },
-      { text: "navbar.gccPokemon", icon: "mdi-cards-outline", route: "/gcc" },
-      { text: "navbar.tvPokemon", icon: "mdi-television", route: "/tv" },
       { text: "navbar.favorites", icon: "mdi-heart", route: "/favorites" },
     ];
 
@@ -105,11 +102,9 @@ export default defineComponent({
       if (this.currentLang === "En") {
         this.$i18n.locale = "pt";
         this.currentLang = "Pt";
-        this.currentFlagClass = "flag-icon-br";
       } else {
         this.$i18n.locale = "en";
         this.currentLang = "En";
-        this.currentFlagClass = "flag-icon-gb";
       }
     },
     getFlag() {
@@ -137,6 +132,8 @@ export default defineComponent({
   height: 60px;
   border-radius: 0%;
   font-weight: 1000;
+  align-items: center;
+  display: flex;
 }
 
 .v-btn.active-nav {
@@ -150,9 +147,9 @@ export default defineComponent({
   margin-right: 6px;
 }
 
-span {
+.nav-text {
   display: block;
-  font-weight: 500;
+  font-weight: bold;
   font-size: 14px;
   color: #9e9e9e;
 }
@@ -183,5 +180,14 @@ span {
   font-size: 30px;
   max-width: 30px;
   height: auto;
+}
+
+@media (max-width: 700px) {
+  .nav-text {
+    display: none;
+  }
+  .nav-icon {
+    margin-right: 0;
+  }
 }
 </style>

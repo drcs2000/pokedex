@@ -11,13 +11,6 @@
                 :placeholder="$t('search')"
                 @input="applySearchFilter"
               />
-              <button class="search-button" @click="applySearchFilter">
-                <img
-                  src="/icons/pokeball.svg"
-                  alt="Pokeball"
-                  style="width: 20px; height: 20px"
-                />
-              </button>
             </div>
           </v-col>
         </v-row>

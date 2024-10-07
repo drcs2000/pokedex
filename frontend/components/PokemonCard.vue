@@ -9,10 +9,10 @@
     </div>
     <div class="pokemon-info">
       <div class="pokemon-number">
-        N°{{ formatId(getPokemonIdFromName(pokemon.name)) }}
+        N°{{ formatId(pokemon.url.split("/")[6]) }}
       </div>
       <div class="pokemon-name">
-        {{ capitalizeFirstLetter(pokemon.name) }}
+        {{ formatName(pokemon.name) }}
       </div>
     </div>
     <v-btn
@@ -52,14 +52,11 @@ export default defineComponent({
   },
   methods: {
     getPokemonImage(name: string) {
-      const pokemonId = this.getPokemonIdFromName(name);
-      return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId}.png`;
+      return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${
+        this.pokemon.url.split("/")[6]
+      }.png`;
     },
-    getPokemonIdFromName(name: string) {
-      const pokemon = this.$store.pokemons.find((evo) => evo.name === name);
-      return pokemon ? pokemon.url.split("/")[6] : "";
-    },
-    capitalizeFirstLetter(name: string) {
+    formatName(name: string) {
       return name
         .toLowerCase()
         .split("-")
@@ -73,22 +70,31 @@ export default defineComponent({
       const favorites = JSON.parse(
         localStorage.getItem("pokemonFavorites") || "[]"
       );
-      this.isFavorited = favorites.includes(this.pokemon.name);
+
+      this.isFavorited = favorites.some(
+        (favorite) =>
+          favorite.name === this.pokemon.name &&
+          favorite.url === this.pokemon.url
+      );
     },
     toggleFavorite() {
       const favorites = JSON.parse(
         localStorage.getItem("pokemonFavorites") || "[]"
       );
+
       if (this.isFavorited) {
-        // Remove from favorites
-        const index = favorites.indexOf(this.pokemon.name);
+        const index = favorites.findIndex(
+          (favorite) =>
+            favorite.name === this.pokemon.name &&
+            favorite.url === this.pokemon.url
+        );
         if (index > -1) {
           favorites.splice(index, 1);
         }
       } else {
-        // Add to favorites
-        favorites.push(this.pokemon.name);
+        favorites.push(this.pokemon);
       }
+
       localStorage.setItem("pokemonFavorites", JSON.stringify(favorites));
       this.isFavorited = !this.isFavorited;
     },

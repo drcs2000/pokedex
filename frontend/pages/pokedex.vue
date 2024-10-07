@@ -4,14 +4,10 @@
       <v-col cols="8">
         <v-row>
           <v-col cols="12">
-            <div class="input-wrapper mb-2">
-              <input
-                type="text"
-                v-model="searchQuery"
-                :placeholder="$t('search')"
-                @input="applySearchFilter"
-              />
-            </div>
+            <FilterSearch
+              :reset-trigger="resetTrigger"
+              @filter-searched="handleFilterSearched"
+            />
           </v-col>
         </v-row>
 
@@ -69,7 +65,11 @@
 
       <v-col cols="4">
         <transition name="fade-transition">
-          <PokemonInfo v-if="selectedPokemon" :key="selectedPokemon.id" :pokemon="selectedPokemon" />
+          <PokemonInfo
+            v-if="selectedPokemon"
+            :key="selectedPokemon.id"
+            :pokemon="selectedPokemon"
+          />
         </transition>
       </v-col>
     </v-row>
@@ -85,6 +85,7 @@ export default defineComponent({
   components: {
     PokemonInfo: () => import("~/components/PokemonInfo.vue"),
     FilterSelect: () => import("~/components/FilterSelect.vue"),
+    FilterSearch: () => import("~/components/FilterSearch.vue"),
     PokemonCard: () => import("~/components/PokemonCard.vue"),
   },
   data() {
@@ -185,6 +186,10 @@ export default defineComponent({
         this.isFiltered = true;
         this.applySelectFilter();
       }
+    },
+    handleFilterSearched(filterSearched: { search: string }) {
+      this.searchQuery = filterSearched.search;
+      this.applySearchFilter();
     },
     async applySelectFilter() {
       this.loading = true;

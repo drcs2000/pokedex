@@ -9,7 +9,7 @@
       {{ capitalizeFirstLetter(pokemon.name) }}
     </div>
 
-    <div class="stat-list mb-4">
+    <div class="pokemon-info-list mb-4">
       <span
         v-for="type in pokemon.types"
         :key="type"
@@ -26,30 +26,30 @@
       </span>
     </div>
 
-    <v-row class="stat-list">
+    <v-row class="pokemon-info-list">
       <div>
-        <v-col class="stat-block">
-          <div class="stat-title">{{ $t("height") }}</div>
-          <div class="stat-badge weaknesses-badge">
+        <v-col class="pokemon-info-block">
+          <div class="pokemon-info-title">{{ $t("height") }}</div>
+          <div class="pokemon-info-badge weaknesses-badge">
             {{ pokemon.details.height / 10 }}m
           </div>
         </v-col>
       </div>
 
       <div>
-        <v-col class="stat-block">
-          <div class="stat-title">{{ $t("weight") }}</div>
-          <div class="stat-badge weaknesses-badge">
+        <v-col class="pokemon-info-block">
+          <div class="pokemon-info-title">{{ $t("weight") }}</div>
+          <div class="pokemon-info-badge weaknesses-badge">
             {{ pokemon.details.weight / 10 }}kg
           </div>
         </v-col>
       </div>
     </v-row>
 
-    <v-row class="stat-list mb-2">
-      <v-col class="stat-block">
-        <div class="stat-title">{{ $t("weaknesses") }}</div>
-        <div class="stat-badge weaknesses-badge">
+    <v-row class="pokemon-info-list mb-2">
+      <v-col class="pokemon-info-block">
+        <div class="pokemon-info-title">{{ $t("weaknesses") }}</div>
+        <div class="pokemon-info-badge weaknesses-badge">
           <span class="mr-1"><strong>2x</strong></span>
           <v-img
             v-for="item in pokemon.weaknesses"
@@ -61,31 +61,31 @@
       </v-col>
     </v-row>
 
-    <v-row class="stat-list mb-2">
-      <div class="stat-title">
+    <v-row class="pokemon-info-list mb-2">
+      <div class="pokemon-info-title">
         <span>{{ $t("stats") }}</span>
       </div>
-      <v-col cols="12" class="stat-list">
+      <v-col cols="12" class="pokemon-info-list">
         <div
           v-for="(stat, index) in pokemon.details.stats"
           :key="index"
-          class="stat-item"
+          class="pokemon-info-item"
           :style="{ backgroundColor: getStatColor(index) }"
         >
-          <div class="stat-label">
+          <div class="pokemon-info-label">
             {{ getStatLabel(index) }}
           </div>
-          <div class="stat-value">{{ stat.base_stat }}</div>
+          <div class="pokemon-info-value">{{ stat.base_stat }}</div>
         </div>
-        <div class="stat-item total-stat">
-          <div class="stat-label">{{ $t("total") }}</div>
-          <div class="stat-value">{{ getTotalStats() }}</div>
+        <div class="pokemon-info-item total-stat">
+          <div class="pokemon-info-label">{{ $t("total") }}</div>
+          <div class="pokemon-info-value">{{ getTotalStats() }}</div>
         </div>
       </v-col>
     </v-row>
 
     <v-row class="pokemon-evolution">
-      <div class="stat-title">{{ $t("evolution") }}</div>
+      <div class="pokemon-info-title">{{ $t("evolution") }}</div>
       <v-col cols="12" class="evolution-list">
         <div
           v-for="(evolution, index) in pokemon.evolutionChain"

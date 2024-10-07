@@ -108,19 +108,19 @@
   flex: auto;
 }
 
-.stat-block {
+.pokemon-info-block {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-.stat-title {
+.pokemon-info-title {
   font-size: 16px;
   font-weight: bold;
   color: #333;
 }
 
-.stat-badge {
+.pokemon-info-badge {
   background-color: #f5f7fc;
   border-radius: 20px;
   padding: 5px 20px;
@@ -139,14 +139,14 @@
   width: auto;
 }
 
-.stat-list {
+.pokemon-info-list {
   display: flex;
   gap: 5px;
   flex-wrap: wrap;
   justify-content: center;
 }
 
-.stat-item {
+.pokemon-info-item {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -157,13 +157,13 @@
   height: 50px;
 }
 
-.stat-label {
+.pokemon-info-label {
   font-size: 10px;
   color: white;
   font-weight: bold;
 }
 
-.stat-value {
+.pokemon-info-value {
   font-size: 12px;
   font-weight: bold;
   color: black;

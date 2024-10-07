@@ -183,10 +183,10 @@ export default defineComponent({
         this.fetch();
       } else {
         this.isFiltered = true;
-        this.applyFilters();
+        this.applySelectFilter();
       }
     },
-    async applyFilters() {
+    async applySelectFilter() {
       this.loading = true;
       try {
         if (Object.keys(this.filters.values).length === 0) {

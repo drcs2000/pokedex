@@ -4,11 +4,16 @@
       <v-col cols="8">
         <v-row>
           <v-col cols="12">
-            <div class="input-wrapper">
-              <input type="text" :placeholder="$t('search')" />
-              <button class="search-button">
+            <div class="input-wrapper mb-2">
+              <input
+                type="text"
+                v-model="searchQuery"
+                :placeholder="$t('search')"
+                @input="applySearchFilter"
+              />
+              <button class="search-button" @click="applySearchFilter">
                 <img
-                  src="../public/icons/pokeball.svg"
+                  src="/icons/pokeball.svg"
                   alt="Pokeball"
                   style="width: 20px; height: 20px"
                 />
@@ -17,10 +22,25 @@
           </v-col>
         </v-row>
 
-        <v-row class="filters mb-2">
+        <v-row class="mb-2">
           <v-col cols="12">
-            <v-row justify="space-between" align="center" class="filters-row">
+            <v-row>
+              <FilterSelect
+                v-for="item in filters.select"
+                :key="item"
+                :info="item"
+                :resetTrigger="resetTrigger"
+                @filter-updated="handleFilterUpdate"
+              />
+
+              <button class="reset-btn" @click="resetFilters">
+                <i class="mdi mdi-refresh" />
+              </button>
+            </v-row>
+
+            <v-row class="mt-6">
               <v-btn
+                :class="{ 'active-sort': isAscending }"
                 variant="text"
                 class="ascending-btn"
                 @click="toggleSortOrder"
@@ -32,37 +52,11 @@
                   {{ isAscending ? "mdi-chevron-up" : "mdi-chevron-down" }}
                 </v-icon>
               </v-btn>
-
-              <div>
-                <span class="range-label">{{ $t("from") }}</span>
-                <div class="input-filter-wrapper">
-                  <input
-                    type="number"
-                    v-model="filters.from"
-                    class="range-input"
-                  />
-                </div>
-
-                <span class="range-label ml-2">{{ $t("to") }}</span>
-                <div class="input-filter-wrapper">
-                  <input
-                    type="number"
-                    v-model="filters.to"
-                    class="range-input"
-                  />
-                </div>
-              </div>
             </v-row>
           </v-col>
-
-          <FilterSelect v-for="item in filters.select" :info="item" />
-
-          <button class="reset-btn">
-            <i class="mdi mdi-refresh" />
-          </button>
         </v-row>
 
-        <v-row class="scrollable-cards mb-6">
+        <v-row class="scrollable-cards mb-6" ref="scrollableCards">
           <v-col
             cols="12"
             md="4"
@@ -71,79 +65,88 @@
             :key="pokemon.name"
             @click="selectPokemon(pokemon)"
           >
-            <div class="pokemon-card">
-              <div class="pokemon-img-wrapper">
-                <img
-                  :src="getPokemonGif(pokemon.name)"
-                  :alt="pokemon.name"
-                  class="pokemon-img"
-                />
-              </div>
-              <div class="pokemon-info">
-                <div class="pokemon-number">
-                  N°{{ formatId(getPokemonIdFromName(pokemon.name)) }}
-                </div>
-                <div class="pokemon-name">
-                  {{ capitalizeFirstLetter(pokemon.name) }}
-                </div>
-              </div>
-            </div>
-          </v-col>
-          <v-col cols="12">
-            <v-btn block @click="loadMorePokemons()"> oie </v-btn>
+            <PokemonCard :pokemon="pokemon" />
           </v-col>
         </v-row>
+
+        <v-col cols="12" v-if="loading">
+          <v-btn block disabled>Loading...</v-btn>
+        </v-col>
       </v-col>
 
       <v-col cols="4">
-        <PokemonInfo v-if="selectedPokemon" :pokemon="selectedPokemon" />
+        <transition name="fade-transition">
+          <PokemonInfo v-if="selectedPokemon" :key="selectedPokemon.id" :pokemon="selectedPokemon" />
+        </transition>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script lang="ts">
-import { defineComponent, nextTick } from "vue";
+import { defineComponent } from "vue";
+import { useInfiniteScroll } from "@vueuse/core";
 
 export default defineComponent({
   name: "Pokedex",
   components: {
     PokemonInfo: () => import("~/components/PokemonInfo.vue"),
     FilterSelect: () => import("~/components/FilterSelect.vue"),
+    PokemonCard: () => import("~/components/PokemonCard.vue"),
   },
   data() {
     return {
       pokemonList: [] as { name: string; types: string[]; sprite: string }[],
+      allPokemonList: [] as { name: string; types: string[]; sprite: string }[],
       selectedPokemon: null,
       isAscending: true,
+      searchQuery: "",
       filters: {
-        from: null,
-        to: null,
-        select: ["type", "weakness", "height", "weight"],
+        select: ["type"],
+        values: {} as Record<string, any[]>,
       },
-      nextUrl: null,
       loading: false,
+      selected: false,
+      isFiltered: false,
+      resetTrigger: false,
     };
   },
   created() {
-    this.$store
-      .fetchPokemons()
-      .then(() => {
-        this.pokemonList = this.$store.pokemons;
-        this.nextUrl = this.$store.nextUrl;
-        this.selectPokemon(this.pokemonList[0]);
-      })
-      .catch((error: any) => {
-        console.error("Erro ao buscar os Pokémons:", error);
-      });
+    this.fetch();
+  },
+  mounted() {
+    const scrollable = this.$refs.scrollableCards;
+    useInfiniteScroll(scrollable, () => {
+      if (!this.loading && !this.isFiltered) {
+        this.loadMorePokemons();
+      }
+    });
   },
   methods: {
+    fetch() {
+      this.$store
+        .fetchPokemons()
+        .then(() => {
+          this.allPokemonList = this.$store.pokemons;
+          this.pokemonList = this.allPokemonList;
+          this.nextUrl = this.$store.nextUrl;
+          this.selectPokemon(this.pokemonList[0]);
+        })
+        .catch((error: any) => {
+          console.error("Erro ao buscar os Pokémons:", error);
+        });
+    },
     resetFilters() {
-      this.filters.from = null;
-      this.filters.to = null;
+      this.searchQuery = "";
+      this.filters.values = {};
+      this.$store.filteredPokemons = [];
+      this.isFiltered = false;
+      this.resetTrigger = !this.resetTrigger;
+      this.fetch();
     },
     toggleSortOrder() {
       this.isAscending = !this.isAscending;
+      this.sortPokemonList();
     },
     async selectPokemon(pokemon: any) {
       await this.$store
@@ -152,31 +155,70 @@ export default defineComponent({
           this.selectedPokemon = data;
         });
     },
-    getPokemonGif(name: string) {
-      const pokemonId = this.getPokemonIdFromName(name);
-      return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/${pokemonId}.gif`;
-    },
-    getPokemonIdFromName(name: string) {
-      const pokemon = this.pokemonList.find((evo) => evo.name === name);
-      return pokemon ? pokemon.url.split("/")[6] : "";
-    },
-    capitalizeFirstLetter(name: string) {
-      return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-    },
-    formatId(id: number): string {
-      return id.toString().padStart(4, "0");
-    },
     async loadMorePokemons() {
       if (!this.nextUrl || this.loading) return;
 
       this.loading = true;
-
       await this.$store.loadMorePokemons(this.nextUrl).then((response) => {
-        this.pokemonList = this.$store.pokemons;
+        this.allPokemonList = [...this.$store.pokemons];
+        this.applySearchFilter();
         this.nextUrl = response.nextUrl;
       });
-
       this.loading = false;
+    },
+    applySearchFilter() {
+      const query = this.searchQuery.trim().toLowerCase();
+
+      if (query) {
+        this.pokemonList = this.allPokemonList.filter((pokemon) => {
+          const pokemonId = this.getPokemonIdFromName(pokemon.name);
+          return (
+            pokemon.name.toLowerCase().includes(query) ||
+            pokemonId.includes(query)
+          );
+        });
+      } else {
+        this.pokemonList = this.allPokemonList;
+      }
+
+      this.sortPokemonList();
+    },
+    handleFilterUpdate(filterUpdate: { type: string; values: any[] }) {
+      this.filters.values[filterUpdate.type] = filterUpdate.values;
+      if (this.filters.values[filterUpdate.type].length === 0) {
+        this.isFiltered = false;
+        this.fetch();
+      } else {
+        this.isFiltered = true;
+        this.applyFilters();
+      }
+    },
+    async applyFilters() {
+      this.loading = true;
+      try {
+        if (Object.keys(this.filters.values).length === 0) {
+          this.pokemonList = [];
+        } else {
+          await this.$store.fetchPokemonType(this.filters.values);
+          this.pokemonList = this.$store.filteredPokemons;
+          this.$store.pokemons = this.$store.filteredPokemons;
+        }
+      } catch (error) {
+        console.error("Erro ao aplicar filtros:", error);
+      } finally {
+        this.loading = false;
+      }
+    },
+    getPokemonIdFromName(name: string) {
+      const pokemon = this.allPokemonList.find((evo) => evo.name === name);
+      return pokemon ? pokemon.url.split("/")[6] : "";
+    },
+    sortPokemonList() {
+      this.pokemonList = this.pokemonList.sort((a, b) => {
+        const idA = parseInt(this.getPokemonIdFromName(a.name), 10);
+        const idB = parseInt(this.getPokemonIdFromName(b.name), 10);
+        return this.isAscending ? idA - idB : idB - idA;
+      });
     },
   },
 });

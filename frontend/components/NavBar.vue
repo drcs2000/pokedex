@@ -13,8 +13,8 @@
               <v-btn
                 class="nav-btn"
                 variant="text"
-                :class="{'active-nav': index === activeIndex}"
-                @click="toggleMenu(index)"
+                :class="{ 'active-nav': index === activeIndex }"
+                @click="navigateTo(index)"
               >
                 <v-icon class="nav-icon" left>{{ item.icon }}</v-icon>
                 {{ $t(item.text) }}
@@ -26,7 +26,7 @@
 
       <v-col cols="auto" class="config-btn-col">
         <v-btn @click="toggleLanguage" class="language-btn">
-          <i :class="`flag-icon ${currentFlagClass}`" class="flag-icon mr-1" />
+          <img :src="getFlag(currentLang)" class="flag-icon mr-1" />
           <span>{{ currentLang }}</span>
         </v-btn>
       </v-col>
@@ -35,55 +35,89 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { defineComponent, onMounted, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 
 export default defineComponent({
-  name: 'Navbar',
-  data() {
-    return {
-      navItems: [
-        { text: 'navbar.home', icon: 'mdi-home', route: '/' },
-        { text: 'navbar.pokedex', icon: 'mdi-pokeball', route: '/pokedex' },
-        { text: 'navbar.videogames', icon: 'mdi-gamepad', route: '/videogames' },
-        { text: 'navbar.gccPokemon', icon: 'mdi-cards-outline', route: '/gcc' },
-        { text: 'navbar.tvPokemon', icon: 'mdi-television', route: '/tv' },
-        { text: 'navbar.favorites', icon: 'mdi-heart', route: '/favorites' }
-      ],
-      currentLang: 'En',
-      currentFlagClass: 'flag-icon-gb',
-      activeIndex: 0,
+  name: "Navbar",
+  setup() {
+    const route = useRoute();
+    const router = useRouter();
+
+    const navItems = [
+      { text: "navbar.home", icon: "mdi-home", route: "/" },
+      { text: "navbar.pokedex", icon: "mdi-pokeball", route: "/pokedex" },
+      { text: "navbar.videogames", icon: "mdi-gamepad", route: "/videogames" },
+      { text: "navbar.gccPokemon", icon: "mdi-cards-outline", route: "/gcc" },
+      { text: "navbar.tvPokemon", icon: "mdi-television", route: "/tv" },
+      { text: "navbar.favorites", icon: "mdi-heart", route: "/favorites" },
+    ];
+
+    const currentLang = ref("En");
+    const activeIndex = ref(0);
+
+    const updateActiveIndex = () => {
+      const currentRoute = route.path;
+      activeIndex.value = navItems.findIndex(
+        (item) => item.route === currentRoute
+      );
     };
+
+    const navigateTo = (index: number) => {
+      activeIndex.value = index;
+      router.push(navItems[index].route).catch((err) => {
+        if (err.name !== "NavigationDuplicated") {
+          console.error("Navigation error:", err);
+        }
+      });
+    };
+
+    watch(
+      () => route.path,
+      () => {
+        updateActiveIndex();
+      },
+      { immediate: true }
+    );
+
+    onMounted(() => {
+      updateActiveIndex();
+    });
+
+    return {
+      navItems,
+      currentLang,
+      activeIndex,
+      navigateTo,
+      updateActiveIndex,
+    };
+  },
+  watch: {
+    $route() {
+      this.updateActiveIndex();
+    },
   },
   created() {
     this.updateActiveIndex();
   },
   methods: {
     toggleLanguage() {
-      if (this.currentLang === 'En') {
-        this.$i18n.locale = 'pt';
-        this.currentLang = 'Pt';
-        this.currentFlagClass = 'flag-icon-br';
+      if (this.currentLang === "En") {
+        this.$i18n.locale = "pt";
+        this.currentLang = "Pt";
+        this.currentFlagClass = "flag-icon-br";
       } else {
-        this.$i18n.locale = 'en';
-        this.currentLang = 'En';
-        this.currentFlagClass = 'flag-icon-gb';
+        this.$i18n.locale = "en";
+        this.currentLang = "En";
+        this.currentFlagClass = "flag-icon-gb";
       }
     },
-    toggleMenu(index: number) {
-      this.activeIndex = index;
-      this.$router.push(this.navItems[index].route);
+    getFlag() {
+      return this.currentLang === "Pt"
+        ? "https://flagcdn.com/h20/br.png"
+        : "https://flagcdn.com/h20/us.png";
     },
-    updateActiveIndex() {
-      const currentRoute = this.$route.path;
-      this.activeIndex = this.navItems.findIndex(item => item.route === currentRoute);
-    }
   },
-  watch: {
-    '$route'() {
-      this.updateActiveIndex();
-    }
-  }
 });
 </script>
 
@@ -147,7 +181,7 @@ span {
 
 .flag-icon {
   font-size: 30px;
-  width: 30px;
-  height: 30px;
+  max-width: 30px;
+  height: auto;
 }
 </style>

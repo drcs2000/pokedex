@@ -5,8 +5,13 @@
         <v-row>
           <v-col cols="12">
             <div class="input-wrapper mb-2">
-              <input type="text" :placeholder="$t('search')" />
-              <button class="search-button">
+              <input
+                type="text"
+                v-model="searchQuery"
+                :placeholder="$t('search')"
+                @input="applySearchFilter"
+              />
+              <button class="search-button" @click="applySearchFilter">
                 <img
                   src="/icons/pokeball.svg"
                   alt="Pokeball"
@@ -21,18 +26,18 @@
           <v-col cols="12">
             <v-row>
               <FilterSelect
-              v-for="item in filters.select"
-              :key="item"
-              :info="item"
-              :resetTrigger="resetTrigger"
-              @filter-updated="handleFilterUpdate"
-            />
+                v-for="item in filters.select"
+                :key="item"
+                :info="item"
+                :resetTrigger="resetTrigger"
+                @filter-updated="handleFilterUpdate"
+              />
 
-            <button class="reset-btn" @click="resetFilters">
-              <i class="mdi mdi-refresh" />
-            </button>
+              <button class="reset-btn" @click="resetFilters">
+                <i class="mdi mdi-refresh" />
+              </button>
             </v-row>
-            
+
             <v-row class="mt-6">
               <v-btn
                 :class="{ 'active-sort': isAscending }"
@@ -47,7 +52,6 @@
                   {{ isAscending ? "mdi-chevron-up" : "mdi-chevron-down" }}
                 </v-icon>
               </v-btn>
-
             </v-row>
           </v-col>
         </v-row>
@@ -61,23 +65,7 @@
             :key="pokemon.name"
             @click="selectPokemon(pokemon)"
           >
-            <div class="pokemon-card">
-              <div class="pokemon-img-wrapper">
-                <img
-                  :src="getPokemonImage(pokemon.name)"
-                  :alt="pokemon.name"
-                  class="pokemon-img"
-                />
-              </div>
-              <div class="pokemon-info">
-                <div class="pokemon-number">
-                  N°{{ formatId(getPokemonIdFromName(pokemon.name)) }}
-                </div>
-                <div class="pokemon-name">
-                  {{ capitalizeFirstLetter(pokemon.name) }}
-                </div>
-              </div>
-            </div>
+            <PokemonCard :pokemon="pokemon" />
           </v-col>
         </v-row>
 
@@ -86,9 +74,11 @@
         </v-col>
       </v-col>
 
-      <v-col cols="4">
-        <PokemonInfo v-if="selectedPokemon" :pokemon="selectedPokemon" />
-      </v-col>
+      <transition name="slide-y-transition">
+        <v-col cols="4">
+          <PokemonInfo v-if="selectedPokemon" :pokemon="selectedPokemon" />
+        </v-col>
+      </transition>
     </v-row>
   </v-container>
 </template>
@@ -102,12 +92,14 @@ export default defineComponent({
   components: {
     PokemonInfo: () => import("~/components/PokemonInfo.vue"),
     FilterSelect: () => import("~/components/FilterSelect.vue"),
+    PokemonCard: () => import("~/components/PokemonCard.vue"),
   },
   data() {
     return {
       pokemonList: [] as { name: string; types: string[]; sprite: string }[],
       selectedPokemon: null,
       isAscending: true,
+      searchQuery: "",
       filters: {
         select: ["type"],
         values: {} as Record<string, any[]>,
@@ -124,10 +116,7 @@ export default defineComponent({
   mounted() {
     const scrollable = this.$refs.scrollableCards;
     useInfiniteScroll(scrollable, () => {
-      if (
-        !this.loading &&
-        !this.isFiltered
-      ) {
+      if (!this.loading && !this.isFiltered) {
         this.loadMorePokemons();
       }
     });
@@ -146,6 +135,7 @@ export default defineComponent({
         });
     },
     resetFilters() {
+      this.searchQuery = "";
       this.filters.values = {};
       this.$store.filteredPokemons = [];
       this.isFiltered = false;
@@ -154,6 +144,7 @@ export default defineComponent({
     },
     toggleSortOrder() {
       this.isAscending = !this.isAscending;
+      this.sortPokemonList();
     },
     async selectPokemon(pokemon: any) {
       await this.$store
@@ -172,23 +163,24 @@ export default defineComponent({
       });
       this.loading = false;
     },
-    getPokemonImage(name: string) {
-      const pokemonId = this.getPokemonIdFromName(name);
-      return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/${pokemonId}.gif`;
-    },
-    getPokemonIdFromName(name: string) {
-      const pokemon = this.pokemonList.find((evo) => evo.name === name);
-      return pokemon ? pokemon.url.split("/")[6] : "";
-    },
-    capitalizeFirstLetter(name: string) {
-      return name
-        .toLowerCase()
-        .split("-")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
-    },
-    formatId(id: number): string {
-      return id.toString().padStart(4, "0");
+    applySearchFilter() {
+      const query = this.searchQuery.trim().toLowerCase();
+
+      if (query) {
+        this.isFiltered = true;
+        this.pokemonList = this.$store.pokemons.filter((pokemon) => {
+          const pokemonId = this.getPokemonIdFromName(pokemon.name);
+          return (
+            pokemon.name.toLowerCase().includes(query) ||
+            pokemonId.includes(query)
+          );
+        });
+      } else {
+        this.isFiltered = false;
+        this.pokemonList = this.$store.pokemons;
+      }
+
+      this.sortPokemonList();
     },
     handleFilterUpdate(filterUpdate: { type: string; values: any[] }) {
       this.filters.values[filterUpdate.type] = filterUpdate.values;

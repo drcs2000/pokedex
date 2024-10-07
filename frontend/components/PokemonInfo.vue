@@ -9,31 +9,41 @@
       {{ capitalizeFirstLetter(pokemon.name) }}
     </div>
 
-    <div class="pokemon-detail-types mb-4">
+    <div class="stat-list mb-4">
       <span
         v-for="type in pokemon.types"
         :key="type"
         class="pokemon-type-badge"
         :style="{ backgroundColor: getTypeColor(type) }"
+        :title="type.toUpperCase()"
       >
+        <v-img
+          style="height: 15px; width: 15px"
+          :src="`/type-icons/${type}.svg`"
+          class="mr-1"
+        />
         {{ type.toUpperCase() }}
       </span>
     </div>
 
     <v-row class="stat-list">
-      <v-col cols="4" class="stat-block">
-        <div class="stat-title">{{ $t("height") }}</div>
-        <div class="stat-badge weaknesses-badge">
-          {{ pokemon.details.height / 10 }}m
-        </div>
-      </v-col>
+      <div>
+        <v-col class="stat-block">
+          <div class="stat-title">{{ $t("height") }}</div>
+          <div class="stat-badge weaknesses-badge">
+            {{ pokemon.details.height / 10 }}m
+          </div>
+        </v-col>
+      </div>
 
-      <v-col cols="4" class="stat-block">
-        <div class="stat-title">{{ $t("weight") }}</div>
-        <div class="stat-badge weaknesses-badge">
-          {{ pokemon.details.weight / 10 }}kg
-        </div>
-      </v-col>
+      <div>
+        <v-col class="stat-block">
+          <div class="stat-title">{{ $t("weight") }}</div>
+          <div class="stat-badge weaknesses-badge">
+            {{ pokemon.details.weight / 10 }}kg
+          </div>
+        </v-col>
+      </div>
     </v-row>
 
     <v-row class="stat-list mb-2">
@@ -118,24 +128,24 @@ export default defineComponent({
   data() {
     return {
       typeColors: {
-        bug: "#A8B820",
-        dark: "#705848",
-        dragon: "#7038F8",
-        electric: "#F8D030",
-        fairy: "#EE99AC",
-        fighting: "#C03028",
-        fire: "#F08030",
-        flying: "#A890F0",
-        ghost: "#705898",
-        grass: "#78C850",
-        ground: "#E0C068",
-        ice: "#98D8D8",
-        normal: "#A8A878",
-        poison: "#A040A0",
-        psychic: "#F85888",
-        rock: "#B8A038",
-        steel: "#B8B8D0",
-        water: "#6890F0",
+        bug: "#9F9F28",
+        dark: "#4F4747",
+        dragon: "#576FBC",
+        electric: "#DFBC28",
+        fairy: "#E18CE1",
+        fighting: "#E49021",
+        fire: "#E4613E",
+        flying: "#74AAD0",
+        ghost: "#6F4570",
+        grass: "#439837",
+        ground: "#A4733C",
+        ice: "#47C8C8",
+        normal: "#828282",
+        poison: "#9354CB",
+        psychic: "#E96C8C",
+        rock: "#A9A481",
+        steel: "#74B0CB",
+        water: "#3099E1",
       },
     };
   },

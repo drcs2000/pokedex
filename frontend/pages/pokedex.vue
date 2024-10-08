@@ -1,7 +1,7 @@
 <template>
   <v-container>
     <v-row>
-      <v-col cols="8">
+      <v-col>
         <v-row>
           <v-col cols="12">
             <FilterSearch :reset-trigger="resetTrigger" @filter-searched="handleFilterSearched" />
@@ -57,7 +57,7 @@
         </v-col>
       </v-col>
 
-      <v-col cols="4">
+      <v-col cols="auto">
         <transition name="fade-transition" mode="out-in">
           <PokemonInfo v-if="selectedPokemon" :key="selectedPokemon.id" :pokemon="selectedPokemon" />
         </transition>

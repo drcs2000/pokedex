@@ -58,7 +58,7 @@
       </v-col>
 
       <v-col cols="4">
-        <transition name="fade-transition">
+        <transition name="fade-transition" mode="out-in">
           <PokemonInfo
             v-if="selectedPokemon"
             :key="selectedPokemon.id"

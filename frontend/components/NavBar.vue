@@ -129,7 +129,7 @@ export default defineComponent({
   color: #717987;
   font-size: 10px;
   height: 60px;
-  border-radius: 0%;
+  border-radius: 0;
   font-weight: 1000;
   align-items: center;
   display: flex;
@@ -138,7 +138,7 @@ export default defineComponent({
 .v-btn.active-nav {
   color: red;
   border-bottom: 2px solid red;
-  border-radius: 0%;
+  border-radius: 0;
 }
 
 .nav-icon {
@@ -153,40 +153,38 @@ export default defineComponent({
   color: #9e9e9e;
 }
 
-.align-navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.config-btn-col {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-}
-
-.language-btn {
-  display: flex;
-  align-items: center;
-  border-radius: 12px;
-  cursor: pointer;
-  padding: 10px;
-  font-size: 16px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.flag-icon {
-  font-size: 30px;
-  max-width: 30px;
-  height: auto;
-}
-
 @media (max-width: 700px) {
+  .nav-icon {
+    font-size: 20px;
+    margin-right: 2px;
+    justify-content: flex-start;
+  }
+
   .nav-text {
     display: none;
   }
-  .nav-icon {
-    margin-right: 0;
+
+  .nav-btn {
+    padding: 0 8px;
+  }
+
+  .flag-icon {
+    font-size: 18px;
+    max-width: 18px;
+  }
+
+  .config-btn-col span {
+    display: none;
+  }
+
+  .navbar {
+    gap: 0px;
+  }
+
+  .align-navbar {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column;
   }
 }
 </style>

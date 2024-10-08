@@ -3,6 +3,13 @@
   overflow-y: auto;
 }
 
+@media (max-width: 700px) {
+  .scrollable-cards {
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+}
+
 .scrollable-cards::-webkit-scrollbar {
   width: 10px;
 }

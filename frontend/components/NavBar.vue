@@ -78,6 +78,22 @@ export default defineComponent({
       }
     };
 
+    const setInitialLanguage = () => {
+      const browserLanguage = navigator.language || navigator.userLanguage;
+      const savedLang = localStorage.getItem("lang");
+
+      if (savedLang) {
+        setLocale(savedLang);
+        currentLang.value = savedLang === "pt" ? "Pt" : "En";
+      } else if (browserLanguage.toLowerCase().includes("pt")) {
+        setLocale("pt");
+        currentLang.value = "Pt";
+      } else {
+        setLocale("en");
+        currentLang.value = "En";
+      }
+    };
+
     const navigateTo = (index: number) => {
       activeIndex.value = index;
       router.push(navItems[index].route).catch((err) => {
@@ -96,11 +112,7 @@ export default defineComponent({
     );
 
     onMounted(() => {
-      const savedLang = localStorage.getItem("lang");
-      if (savedLang) {
-        setLocale(savedLang);
-        currentLang.value = savedLang === "pt" ? "Pt" : "En";
-      }
+      setInitialLanguage();
       updateActiveIndex();
     });
 

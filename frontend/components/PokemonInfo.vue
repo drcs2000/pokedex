@@ -148,8 +148,6 @@ export default defineComponent({
       water: "#3099E1",
     };
 
-    console.log(props.pokemon)
-
     const getTypeColor = (type: string) => {
       return typeColors[type] || "#A8A878";
     };

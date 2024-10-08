@@ -57,9 +57,12 @@
         </v-col>
       </v-col>
 
+      <!-- Move the ref to a direct HTML element that contains the PokemonInfo component -->
       <v-col cols="auto">
         <transition name="fade-transition" mode="out-in">
-          <PokemonInfo v-if="selectedPokemon" :key="selectedPokemon.id" :pokemon="selectedPokemon" />
+          <div ref="pokemonInfoSection"> <!-- Add ref here -->
+            <PokemonInfo v-if="selectedPokemon" :key="selectedPokemon.id" :pokemon="selectedPokemon" />
+          </div>
         </transition>
       </v-col>
     </v-row>
@@ -67,9 +70,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted, watch } from 'vue';
+import { defineComponent, ref, onMounted } from 'vue';
 import { useInfiniteScroll } from '@vueuse/core';
-import { usePokemonStore } from "~/store/Pokemon";
+import { usePokemonStore } from '~/store/Pokemon';
 
 export default defineComponent({
   name: 'Pokedex',
@@ -91,6 +94,7 @@ export default defineComponent({
     const resetTrigger = ref(false);
     const filters = ref({ select: ['type'], values: {} });
     const scrollableCards = ref(null);
+    const pokemonInfoSection = ref<HTMLElement | null>(null);
 
     const fetch = async () => {
       try {
@@ -100,6 +104,22 @@ export default defineComponent({
         selectPokemon(pokemonList.value[0]);
       } catch (error) {
         console.error('Erro ao buscar os Pokémons:', error);
+      }
+    };
+
+    const selectPokemon = async (pokemon) => {
+      try {
+        const data = await store.fetchPokemonInfo(pokemon.url.split('/')[6]);
+        selectedPokemon.value = data;
+        scrollToPokemonInfo();
+      } catch (error) {
+        console.error('Erro ao selecionar Pokémon:', error);
+      }
+    };
+
+    const scrollToPokemonInfo = () => {
+      if (pokemonInfoSection.value) {
+        pokemonInfoSection.value.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     };
 
@@ -115,15 +135,6 @@ export default defineComponent({
     const toggleSortOrder = () => {
       isAscending.value = !isAscending.value;
       sortPokemonList();
-    };
-
-    const selectPokemon = async (pokemon) => {
-      try {
-        const data = await store.fetchPokemonInfo(pokemon.url.split('/')[6]);
-        selectedPokemon.value = data;
-      } catch (error) {
-        console.error('Erro ao selecionar Pokémon:', error);
-      }
     };
 
     const loadMorePokemons = async () => {
@@ -161,11 +172,6 @@ export default defineComponent({
       sortPokemonList();
     };
 
-    const handleFilterSearched = (filterSearched) => {
-      searchQuery.value = filterSearched.search;
-      applySearchFilter();
-    };
-
     const applySelectFilter = async () => {
       loading.value = true;
       try {
@@ -194,7 +200,14 @@ export default defineComponent({
 
     onMounted(() => {
       fetch();
-      useInfiniteScroll(scrollableCards, loadMorePokemons);
+      useInfiniteScroll(
+        scrollableCards,
+        () => {
+          if (!isFiltered.value) {
+            loadMorePokemons();
+          }
+        }
+      );
     });
 
     return {
@@ -208,14 +221,15 @@ export default defineComponent({
       resetTrigger,
       filters,
       scrollableCards,
+      pokemonInfoSection,
       fetch,
       resetFilters,
       toggleSortOrder,
       selectPokemon,
+      scrollToPokemonInfo,
       loadMorePokemons,
       applySearchFilter,
       handleFilterUpdate,
-      handleFilterSearched,
       applySelectFilter,
       getPokemonIdFromName,
       sortPokemonList,

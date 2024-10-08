@@ -158,6 +158,7 @@ export default defineComponent({
         isFiltered.value = true;
         applySelectFilter();
       }
+      sortPokemonList();
     };
 
     const handleFilterSearched = (filterSearched) => {
@@ -173,6 +174,7 @@ export default defineComponent({
       } catch (error) {
         console.error('Erro ao aplicar filtros:', error);
       } finally {
+        sortPokemonList();
         loading.value = false;
       }
     };

@@ -14,7 +14,7 @@
     </v-row>
 
     <v-row v-else>
-      <v-col cols="8">
+      <v-col>
         <v-row>
           <v-col cols="12">
             <FilterSearch
@@ -57,7 +57,7 @@
         </v-row>
       </v-col>
 
-      <v-col cols="4">
+      <v-col cols="auto">
         <transition name="fade-transition" mode="out-in">
           <PokemonInfo
             v-if="selectedPokemon"

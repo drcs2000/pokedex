@@ -197,6 +197,12 @@ export default defineComponent({
       });
     };
 
+    
+    const handleFilterSearched = (filterSearched) => {
+      searchQuery.value = filterSearched.search;
+      applySearchFilter();
+    };
+
     onMounted(() => {
       fetch();
       useInfiniteScroll(
@@ -232,6 +238,7 @@ export default defineComponent({
       applySelectFilter,
       getPokemonIdFromName,
       sortPokemonList,
+      handleFilterSearched
     };
   },
 });

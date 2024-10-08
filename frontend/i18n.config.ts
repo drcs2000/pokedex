@@ -26,6 +26,16 @@ export default {
         title: "No favorite Pokemon found.",
         subtitle: "Would you like to visit our Pokedex?",
       },
+      see_more: "See More",
+      home: {
+        welcomeTitle: 'Welcome to the Pokémon Universe!',
+        subtitle: 'Discover everything you need to know about Pokémon.',
+        whatIsPokedexTitle: 'What is a Pokedex?',
+        whatIsPokedexDescription: 'A Pokedex is a comprehensive encyclopedia containing data on various Pokémon species. It includes information like their abilities, types, evolution stages, and stats.',
+        howToUsePokedexTitle: 'How to Use the Pokedex',
+        howToUsePokedexDescription: 'Use the Pokedex to search for Pokémon by their names or types. Click on a Pokémon to view its detailed stats and learn more about its abilities and evolution.',
+        seeMore: 'See More'
+      },
     },
     pt: {
       navbar: {
@@ -50,6 +60,16 @@ export default {
       noFavoritesMessage: {
         title: "Não foi encontrado nenhum Pokémon favoritado.",
         subtitle: "Deseja visitar nossa Pokédex?",
+      },
+      see_more: "Ver Mais",
+      home: {
+        welcomeTitle: 'Bem-vindo ao Universo Pokémon!',
+        subtitle: 'Descubra tudo o que você precisa saber sobre Pokémon.',
+        whatIsPokedexTitle: 'O que é uma Pokédex?',
+        whatIsPokedexDescription: 'Uma Pokédex é uma enciclopédia abrangente que contém dados sobre várias espécies de Pokémon. Inclui informações como suas habilidades, tipos, estágios de evolução e estatísticas.',
+        howToUsePokedexTitle: 'Como Usar a Pokédex',
+        howToUsePokedexDescription: 'Use a Pokédex para procurar Pokémon por seus nomes ou tipos. Clique em um Pokémon para ver suas estatísticas detalhadas e aprender mais sobre suas habilidades e evolução.',
+        seeMore: 'Ver Mais'
       },
     },
   },

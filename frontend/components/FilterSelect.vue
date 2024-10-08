@@ -14,11 +14,7 @@
 
     <transition name="slide-y-transition">
       <div v-if="showDropdown[info]" class="dropdown-content">
-        <label
-          v-for="item in selectionArray"
-          :key="item"
-          class="dropdown-item"
-        >
+        <label v-for="item in selectionArray" :key="item" class="dropdown-item">
           <input
             type="checkbox"
             :value="item"
@@ -34,62 +30,70 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import { availableTypes } from "@/public/utils/types.ts";
+import { defineComponent, ref, watch, onMounted, onBeforeUnmount } from 'vue';
+import { availableTypes } from '@/public/utils/types.ts';
 
 export default defineComponent({
-  name: "FilterSelect",
+  name: 'FilterSelect',
   props: {
     info: {
       type: String,
       required: true,
-      default: () => "",
+      default: () => '',
     },
     resetTrigger: {
       type: Boolean,
       required: true,
     },
   },
-  data() {
-    return {
-      availableTypes, 
-      selectionArray: [] as string[],
-      selectedTypes: [] as string[],
-      showDropdown: {
-        type: false,
-      },
+  setup(props, { emit }) {
+    const selectionArray = ref<string[]>([]);
+    const selectedTypes = ref<string[]>([]);
+    const showDropdown = ref<{ [key: string]: boolean }>({ type: false });
+
+    const toggleDropdown = (dropdown: string) => {
+      if (dropdown === 'type') {
+        selectionArray.value = availableTypes;
+      }
+      showDropdown.value[dropdown] = !showDropdown.value[dropdown];
     };
-  },
-  watch: {
-    resetTrigger() {
-      this.selectedTypes = [];
-    },
-  },
-  mounted() {
-    document.addEventListener("click", this.handleOutsideClick);
-  },
-  beforeUnmount() {
-    document.removeEventListener("click", this.handleOutsideClick);
-  },
-  methods: {
-    toggleDropdown(dropdown: string) {
-      if (dropdown === "type") {
-        this.selectionArray = this.availableTypes;
-      }
-      this.showDropdown[dropdown] = !this.showDropdown[dropdown];
-    },
-    handleOutsideClick(event: Event) {
+
+    const handleOutsideClick = (event: Event) => {
       const target = event.target as HTMLElement;
-      if (!target.closest(".custom-select")) {
-        this.showDropdown.type = false;
+      if (!target.closest('.custom-select')) {
+        showDropdown.value.type = false;
       }
-    },
-    updateFilter() {
-      this.$emit("filter-updated", {
-        type: this.info,
-        values: this.selectedTypes,
+    };
+
+    const updateFilter = () => {
+      emit('filter-updated', {
+        type: props.info,
+        values: selectedTypes.value,
       });
-    },
+    };
+
+    watch(
+      () => props.resetTrigger,
+      () => {
+        selectedTypes.value = [];
+      }
+    );
+
+    onMounted(() => {
+      document.addEventListener('click', handleOutsideClick);
+    });
+
+    onBeforeUnmount(() => {
+      document.removeEventListener('click', handleOutsideClick);
+    });
+
+    return {
+      selectionArray,
+      selectedTypes,
+      showDropdown,
+      toggleDropdown,
+      updateFilter,
+    };
   },
 });
 </script>

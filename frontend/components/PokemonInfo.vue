@@ -1,7 +1,7 @@
 <template>
   <v-card class="pokemon-info-card">
     <div class="pokemon-img-details-wrapper">
-      <img :src="cardImage()" alt="pokemon" class="pokemon-img-details" />
+      <img :src="cardImage" alt="pokemon" class="pokemon-img-details" />
     </div>
 
     <div class="pokemon-detail-id">#{{ pokemon.id }}</div>
@@ -53,6 +53,7 @@
           <span class="mr-1"><strong>2x</strong></span>
           <v-img
             v-for="item in pokemon.weaknesses"
+            :key="item.name"
             style="height: 15px; width: 15px"
             :src="`/type-icons/${item.name}.svg`"
             :title="item.name.toUpperCase()"
@@ -79,7 +80,7 @@
         </div>
         <div class="pokemon-info-item total-stat">
           <div class="pokemon-info-label">{{ $t("total") }}</div>
-          <div class="pokemon-info-value">{{ getTotalStats() }}</div>
+          <div class="pokemon-info-value">{{ getTotalStats }}</div>
         </div>
       </v-col>
     </v-row>
@@ -114,7 +115,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, computed } from "vue";
 
 export default defineComponent({
   name: "PokemonInfoCard",
@@ -122,42 +123,43 @@ export default defineComponent({
     pokemon: {
       type: Object,
       required: true,
-      default: () => {},
+      default: () => ({}),
     },
   },
-  data() {
-    return {
-      typeColors: {
-        bug: "#9F9F28",
-        dark: "#4F4747",
-        dragon: "#576FBC",
-        electric: "#DFBC28",
-        fairy: "#E18CE1",
-        fighting: "#E49021",
-        fire: "#E4613E",
-        flying: "#74AAD0",
-        ghost: "#6F4570",
-        grass: "#439837",
-        ground: "#A4733C",
-        ice: "#47C8C8",
-        normal: "#828282",
-        poison: "#9354CB",
-        psychic: "#E96C8C",
-        rock: "#A9A481",
-        steel: "#74B0CB",
-        water: "#3099E1",
-      },
+  setup(props) {
+    const typeColors = {
+      bug: "#9F9F28",
+      dark: "#4F4747",
+      dragon: "#576FBC",
+      electric: "#DFBC28",
+      fairy: "#E18CE1",
+      fighting: "#E49021",
+      fire: "#E4613E",
+      flying: "#74AAD0",
+      ghost: "#6F4570",
+      grass: "#439837",
+      ground: "#A4733C",
+      ice: "#47C8C8",
+      normal: "#828282",
+      poison: "#9354CB",
+      psychic: "#E96C8C",
+      rock: "#A9A481",
+      steel: "#74B0CB",
+      water: "#3099E1",
     };
-  },
-  methods: {
-    getTypeColor(type: string) {
-      return this.typeColors[type] || "#A8A878";
-    },
-    getStatLabel(index: number) {
+
+    console.log(props.pokemon)
+
+    const getTypeColor = (type: string) => {
+      return typeColors[type] || "#A8A878";
+    };
+
+    const getStatLabel = (index: number) => {
       const labels = ["HP", "ATK", "DEF", "SpA", "SpD", "SPD"];
       return labels[index] || "";
-    },
-    getStatColor(index: number) {
+    };
+
+    const getStatColor = (index: number) => {
       const colors = [
         "#ff5e57",
         "#f7b32b",
@@ -167,33 +169,49 @@ export default defineComponent({
         "#fb82a8",
       ];
       return colors[index] || "#d3d3d3";
-    },
-    getTotalStats() {
-      return this.pokemon.details.stats.reduce(
-        (total, stat) => total + stat.base_stat,
+    };
+
+    const getTotalStats = computed(() => {
+      return props.pokemon.details.stats.reduce(
+        (total: number, stat: { base_stat: number }) => total + stat.base_stat,
         0
       );
-    },
-    getSprite(name: string) {
-      const pokemonId = this.getPokemonIdFromName(name);
+    });
+
+    const getSprite = (name: string) => {
+      const pokemonId = getPokemonIdFromName(name);
       return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId}.png`;
-    },
-    getPokemonIdFromName(name: string) {
-      const pokemon = this.pokemon.evolutionChain.find(
-        (evo) => evo.name === name
+    };
+
+    const getPokemonIdFromName = (name: string) => {
+      const pokemon = props.pokemon.evolutionChain.find(
+        (evo: { name: string }) => evo.name === name
       );
       return pokemon ? pokemon.url.split("/")[6] : "";
-    },
-    capitalizeFirstLetter(name: string) {
+    };
+
+    const capitalizeFirstLetter = (name: string) => {
       return name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
-    },
-    cardImage() {
+    };
+
+    const cardImage = computed(() => {
       return (
-        this.pokemon.details.sprites.other?.["official-artwork"]
+        props.pokemon.details.sprites.other?.["official-artwork"]
           ?.front_default ??
-        this.pokemon.details.sprites.other.home.front_default
+        props.pokemon.details.sprites.other.home.front_default
       );
-    },
+    });
+
+    return {
+      getTypeColor,
+      getStatLabel,
+      getStatColor,
+      getTotalStats,
+      getSprite,
+      getPokemonIdFromName,
+      capitalizeFirstLetter,
+      cardImage,
+    };
   },
 });
 </script>

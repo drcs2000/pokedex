@@ -10,32 +10,36 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref, watch } from 'vue';
 
 export default defineComponent({
-  name: "FilterSearch",
+  name: 'FilterSearch',
   props: {
     resetTrigger: {
       type: Boolean,
       required: true,
     },
   },
-  data() {
-    return {
-      searchQuery: ''
-    }
-  },
-  watch: {
-    resetTrigger() {
-      this.searchQuery = '';
-    },
-  },
-  methods: {
-    updateFilter() {
-      this.$emit("filter-searched", {
-        search: this.searchQuery,
+  setup(props, { emit }) {
+    const searchQuery = ref('');
+
+    const updateFilter = () => {
+      emit('filter-searched', {
+        search: searchQuery.value,
       });
-    },
-  }
-})
+    };
+
+    watch(
+      () => props.resetTrigger,
+      () => {
+        searchQuery.value = '';
+      }
+    );
+
+    return {
+      searchQuery,
+      updateFilter,
+    };
+  },
+});
 </script>

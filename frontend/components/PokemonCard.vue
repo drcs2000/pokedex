@@ -2,14 +2,14 @@
   <div class="pokemon-card">
     <div class="pokemon-img-wrapper">
       <img
-        :src="getPokemonImage(pokemon.name)"
+        :src="getPokemonImage()"
         :alt="pokemon.name"
         class="pokemon-img"
       />
     </div>
     <div class="pokemon-info">
       <div class="pokemon-number">
-        N°{{ formatId(pokemon.url.split("/")[6]) }}
+        N°{{ formatId(pokemonId) }}
       </div>
       <div class="pokemon-name">
         {{ formatName(pokemon.name) }}
@@ -23,18 +23,18 @@
       :class="{ favorited: isFavorited }"
       @click.stop="toggleFavorite"
     >
-      <v-icon style="width: 15px; height: 15px">{{
-        isFavorited ? "mdi-heart" : "mdi-heart-outline"
-      }}</v-icon>
+      <v-icon style="width: 15px; height: 15px">
+        {{ isFavorited ? "mdi-heart" : "mdi-heart-outline" }}
+      </v-icon>
     </v-btn>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, computed, ref, onMounted } from 'vue';
 
 export default defineComponent({
-  name: "PokemonCard",
+  name: 'PokemonCard',
   props: {
     pokemon: {
       type: Object,
@@ -42,62 +42,65 @@ export default defineComponent({
       default: () => ({}),
     },
   },
-  data() {
-    return {
-      isFavorited: false,
+  setup(props) {
+    const isFavorited = ref(false);
+    const pokemonId = computed(() => props.pokemon.url.split('/')[6]);
+
+    const getPokemonImage = () => {
+      return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${pokemonId.value}.png`;
     };
-  },
-  created() {
-    this.checkFavoriteStatus();
-  },
-  methods: {
-    getPokemonImage(name: string) {
-      return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${
-        this.pokemon.url.split("/")[6]
-      }.png`;
-    },
-    formatName(name: string) {
+
+    const formatName = (name: string) => {
       return name
         .toLowerCase()
-        .split("-")
+        .split('-')
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
-    },
-    formatId(id: number): string {
-      return id.toString().padStart(4, "0");
-    },
-    checkFavoriteStatus() {
-      const favorites = JSON.parse(
-        localStorage.getItem("pokemonFavorites") || "[]"
-      );
+        .join(' ');
+    };
 
-      this.isFavorited = favorites.some(
-        (favorite) =>
-          favorite.name === this.pokemon.name &&
-          favorite.url === this.pokemon.url
-      );
-    },
-    toggleFavorite() {
-      const favorites = JSON.parse(
-        localStorage.getItem("pokemonFavorites") || "[]"
-      );
+    const formatId = (id: number): string => {
+      return id.toString().padStart(4, '0');
+    };
 
-      if (this.isFavorited) {
+    const checkFavoriteStatus = () => {
+      const favorites = JSON.parse(localStorage.getItem('pokemonFavorites') || '[]');
+      isFavorited.value = favorites.some(
+        (favorite: { name: string; url: string }) =>
+          favorite.name === props.pokemon.name && favorite.url === props.pokemon.url
+      );
+    };
+
+    const toggleFavorite = () => {
+      const favorites = JSON.parse(localStorage.getItem('pokemonFavorites') || '[]');
+
+      if (isFavorited.value) {
         const index = favorites.findIndex(
-          (favorite) =>
-            favorite.name === this.pokemon.name &&
-            favorite.url === this.pokemon.url
+          (favorite: { name: string; url: string }) =>
+            favorite.name === props.pokemon.name && favorite.url === props.pokemon.url
         );
         if (index > -1) {
           favorites.splice(index, 1);
         }
       } else {
-        favorites.push(this.pokemon);
+        favorites.push(props.pokemon);
       }
 
-      localStorage.setItem("pokemonFavorites", JSON.stringify(favorites));
-      this.isFavorited = !this.isFavorited;
-    },
+      localStorage.setItem('pokemonFavorites', JSON.stringify(favorites));
+      isFavorited.value = !isFavorited.value;
+    };
+
+    onMounted(() => {
+      checkFavoriteStatus();
+    });
+
+    return {
+      isFavorited,
+      pokemonId,
+      getPokemonImage,
+      formatName,
+      formatId,
+      toggleFavorite,
+    };
   },
 });
 </script>

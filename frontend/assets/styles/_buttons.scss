@@ -39,3 +39,23 @@
   border: 1px solid $border-primary-color;
   box-shadow: 4px 4px 10px $border-primary-color;
 }
+
+.styled-link {
+  display: inline-block;
+  background-color: #ff5350;
+  color: white;
+  padding: 10px 15px;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.styled-link:hover {
+  background-color: #ff3330;
+}
+
+.styled-link:active {
+  background-color: #e62926;
+}

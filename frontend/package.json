@@ -10,7 +10,10 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@nuxtjs/i18n": "^8.5.5",
+    "@nuxtjs/i18n": "^8.0.0",
+    "vue-i18n": "^9.2.2",
+    "@intlify/core-base": "^9.2.0",
+    "@intlify/shared": "^9.2.0",
     "@pinia/nuxt": "^0.5.5",
     "@vueuse/core": "^11.1.0",
     "axios": "^1.7.7",
@@ -18,7 +21,6 @@
     "nuxt": "^3.13.0",
     "pinia": "^2.2.4",
     "vue": "^3.5.10",
-    "vue-i18n": "^10.0.0",
     "vue-router": "latest"
   },
   "devDependencies": {

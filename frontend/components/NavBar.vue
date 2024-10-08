@@ -25,8 +25,8 @@
       </v-col>
 
       <v-col cols="auto" class="config-btn-col">
-        <v-btn @click="toggleLanguage" class="language-btn">
-          <img :src="getFlag(currentLang)" class="flag-icon mr-1" />
+        <v-btn variant="text" @click="toggleLanguage">
+          <img :src="flagUrl" class="flag-icon mr-1" />
           <span>{{ currentLang }}</span>
         </v-btn>
       </v-col>
@@ -35,12 +35,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, watch } from "vue";
+import { defineComponent, ref, computed, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
 
 export default defineComponent({
   name: "Navbar",
   setup() {
+    const { locale, setLocale } = useI18n();
     const route = useRoute();
     const router = useRouter();
 
@@ -55,9 +57,25 @@ export default defineComponent({
 
     const updateActiveIndex = () => {
       const currentRoute = route.path;
-      activeIndex.value = navItems.findIndex(
-        (item) => item.route === currentRoute
-      );
+      activeIndex.value = navItems.findIndex((item) => item.route === currentRoute);
+    };
+
+    const flagUrl = computed(() => {
+      return currentLang.value === "Pt"
+        ? "https://flagcdn.com/h20/br.png"
+        : "https://flagcdn.com/h20/us.png";
+    });
+
+    const toggleLanguage = () => {
+      if (locale.value === "en") {
+        setLocale("pt");
+        currentLang.value = "Pt";
+        localStorage.setItem("lang", "pt");
+      } else {
+        setLocale("en");
+        currentLang.value = "En";
+        localStorage.setItem("lang", "en");
+      }
     };
 
     const navigateTo = (index: number) => {
@@ -78,6 +96,11 @@ export default defineComponent({
     );
 
     onMounted(() => {
+      const savedLang = localStorage.getItem("lang");
+      if (savedLang) {
+        setLocale(savedLang);
+        currentLang.value = savedLang === "pt" ? "Pt" : "En";
+      }
       updateActiveIndex();
     });
 
@@ -85,33 +108,10 @@ export default defineComponent({
       navItems,
       currentLang,
       activeIndex,
+      flagUrl,
       navigateTo,
-      updateActiveIndex,
+      toggleLanguage,
     };
-  },
-  watch: {
-    $route() {
-      this.updateActiveIndex();
-    },
-  },
-  created() {
-    this.updateActiveIndex();
-  },
-  methods: {
-    toggleLanguage() {
-      if (this.currentLang === "En") {
-        this.$i18n.locale = "pt";
-        this.currentLang = "Pt";
-      } else {
-        this.$i18n.locale = "en";
-        this.currentLang = "En";
-      }
-    },
-    getFlag() {
-      return this.currentLang === "Pt"
-        ? "https://flagcdn.com/h20/br.png"
-        : "https://flagcdn.com/h20/us.png";
-    },
   },
 });
 </script>
@@ -122,7 +122,6 @@ export default defineComponent({
   border-radius: 12px;
   display: flex;
   justify-content: center;
-  margin: 20px auto;
   height: 60px;
 }
 

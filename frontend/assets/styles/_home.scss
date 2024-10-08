@@ -1,0 +1,44 @@
+.header-section {
+  margin-bottom: 30px;
+}
+
+.welcome-title {
+  font-size: 2.8rem;
+  font-weight: bold;
+  color: #ff5350;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #555;
+}
+
+.info-cards-section {
+  margin: 40px 0;
+}
+
+.info-card {
+  margin: 10px;
+}
+
+.hover-card {
+  border-radius: 12px;
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+
+.hover-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+}
+
+.card-text {
+  color: #717987;
+  font-size: 1rem;
+}

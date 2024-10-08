@@ -1,6 +1,17 @@
 import { defineNuxtConfig } from 'nuxt/config';
 
 export default defineNuxtConfig({
+  app: {
+    head: {
+      title: 'My Pokémon App',
+      meta: [
+        { name: 'description', content: 'Explore the world of Pokémon with detailed information and more!' }
+      ],
+      link: [
+        { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+      ]
+    }
+  },
   css: [
     'vuetify/styles',
     '@mdi/font/css/materialdesignicons.css',
@@ -33,7 +44,7 @@ export default defineNuxtConfig({
       useCookie: true,
       cookieKey: 'i18n_redirected',
       alwaysRedirect: true,
-      fallbackLocale: 'en',
+      redirectOn: 'root',
     },
     vueI18n: './i18n.config.ts',
   },

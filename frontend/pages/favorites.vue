@@ -2,7 +2,7 @@
   <v-container>
     <v-row v-if="pokemonList.length === 0">
       <v-col cols="12" class="text-center" align="center" justify="center">
-        <v-img style="height: 25vh; width: auto" :src="loadingGif" />
+        <v-img style="height: 25vh; width: auto" :src="loadingGifSrc" />
         <h2>
           {{ $t("noFavoritesMessage.title") }}<br />
           {{ $t("noFavoritesMessage.subtitle") }}
@@ -41,7 +41,8 @@
                 }}</v-icon>
               </v-btn>
             </v-row>
-            <v-row class="scrollable-cards mb-6" ref="scrollableCards">
+
+            <v-row class="scrollable-cards mb-6">
               <v-col
                 cols="12"
                 md="4"
@@ -59,11 +60,9 @@
 
       <v-col cols="auto">
         <transition name="fade-transition" mode="out-in">
-          <PokemonInfo
-            v-if="selectedPokemon"
-            :key="selectedPokemon.id"
-            :pokemon="selectedPokemon"
-          />
+          <div ref="pokemonInfoSection">
+            <PokemonInfo v-if="selectedPokemon" :key="selectedPokemon.id" :pokemon="selectedPokemon" />
+          </div>
         </transition>
       </v-col>
     </v-row>
@@ -71,17 +70,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, computed } from "vue";
+import { defineComponent, ref, onMounted } from "vue";
 import loadingGif from "../assets/extra/loading.gif";
-import PokemonInfo from "~/components/PokemonInfo.vue";
-import PokemonCard from "~/components/PokemonCard.vue";
 import { usePokemonStore } from "~/store/Pokemon";
 
 export default defineComponent({
   name: "Favorites",
   components: {
-    PokemonInfo,
-    PokemonCard,
+    PokemonInfo: () => import('~/components/PokemonInfo.vue'),
+    FilterSearch: () => import('~/components/FilterSearch.vue'),
+    PokemonCard: () => import('~/components/PokemonCard.vue'),
   },
   setup() {
     const store = usePokemonStore();
@@ -92,7 +90,7 @@ export default defineComponent({
     const loading = ref(false);
     const resetTrigger = ref(false);
     const searchQuery = ref("");
-    const scrollableCards = ref(null);
+    const pokemonInfoSection = ref<HTMLElement | null>(null);
     const loadingGifSrc = ref(loadingGif);
 
     const fetchFavorites = () => {
@@ -110,8 +108,15 @@ export default defineComponent({
       try {
         const data = await store.fetchPokemonInfo(pokemon.url.split("/")[6]);
         selectedPokemon.value = data;
+        scrollToPokemonInfo();
       } catch (error) {
         console.error("Erro ao selecionar Pokémon:", error);
+      }
+    };
+
+    const scrollToPokemonInfo = () => {
+      if (pokemonInfoSection.value) {
+        pokemonInfoSection.value.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     };
 
@@ -163,7 +168,8 @@ export default defineComponent({
       loading,
       resetTrigger,
       searchQuery,
-      scrollableCards,
+      pokemonInfoSection,
+      scrollToPokemonInfo,
       loadingGifSrc,
       fetchFavorites,
       selectPokemon,

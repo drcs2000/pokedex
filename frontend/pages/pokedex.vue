@@ -57,10 +57,9 @@
         </v-col>
       </v-col>
 
-      <!-- Move the ref to a direct HTML element that contains the PokemonInfo component -->
       <v-col cols="auto">
         <transition name="fade-transition" mode="out-in">
-          <div ref="pokemonInfoSection"> <!-- Add ref here -->
+          <div ref="pokemonInfoSection">
             <PokemonInfo v-if="selectedPokemon" :key="selectedPokemon.id" :pokemon="selectedPokemon" />
           </div>
         </transition>

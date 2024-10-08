@@ -134,6 +134,8 @@ export default defineComponent({
   font-size: 1.5rem;
   font-weight: bold;
   color: #333;
+  white-space: normal;
+  word-wrap: break-word;
 }
 
 .card-text {
